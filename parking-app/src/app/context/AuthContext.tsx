@@ -1,17 +1,21 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
-import { createClient, User } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { createContext, useContext, useState } from "react";
+import { User } from "@supabase/supabase-js";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   signOut: () => Promise<void>;
 }
+
+// Mock user data
+const mockUser = {
+  id: "mock-user-id",
+  email: "mock@example.com",
+  role: "authenticated",
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+} as User;
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
@@ -20,29 +24,13 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Check active sessions and sets the user
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    // Listen for changes on auth state (sign in, sign out, etc.)
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  // Always return the mock user and set loading to false
+  const [user] = useState<User | null>(mockUser);
+  const [loading] = useState(false);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    // Mock sign out - do nothing
+    console.log("Sign out called (disabled)");
   };
 
   return (

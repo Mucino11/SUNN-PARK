@@ -4,16 +4,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import logoImage from "../images/logo.svg";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { useAuth } from "../context/AuthContext";
 
 const schema = z.object({
   email: z.string().email(),
@@ -30,18 +25,15 @@ export default function LoginPage() {
   const { errors, isSubmitting } = formState;
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const router = useRouter();
+  const { user } = useAuth();
 
   const onSubmit = async (data: FormData) => {
-    setErrorMsg(null);
-    const { error } = await supabase.auth.signInWithPassword({
-      email: data.email,
-      password: data.password,
-    });
-
-    if (error) {
-      setErrorMsg(error.message);
-    } else {
+    try {
+      setErrorMsg(null);
+      // Since we're using mock auth, just redirect to home
       router.push("/");
+    } catch (error) {
+      setErrorMsg("An unexpected error occurred. Please try again.");
     }
   };
 
@@ -121,7 +113,7 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-2 text-center text-sm">
-          Don’t have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/register" className="text-blue-600 hover:underline">
             Sign up
           </Link>
