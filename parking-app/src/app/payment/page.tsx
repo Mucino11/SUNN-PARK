@@ -1,6 +1,5 @@
 "use client";
 import Image from "next/image";
-import doctorImage from "../images/doctor-1.jpg";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import BottomNavigation from "../components/navigation/BottomNavigation";
@@ -40,7 +39,7 @@ export default function PaymentPage() {
         <h2 className="font-bold text-2xl">Confirm Reservation</h2>
         <Link href="/profile">
           <Image
-            src={doctorImage}
+            src="/img/pexels-linkedin-2182970.jpg"
             alt="Profile"
             width={50}
             height={50}

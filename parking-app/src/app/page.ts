@@ -17,7 +17,7 @@ export default function HomePage() {
       h(Header, {
         key: "header",
         logoSrc: "/logo.svg",
-        profileSrc: "/images/default-avatar.svg",
+        profileSrc: "/img/pexels-linkedin-2182970.jpg",
       }),
 
       h(

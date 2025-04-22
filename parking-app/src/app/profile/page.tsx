@@ -23,6 +23,7 @@ import {
   ChevronRight,
   TrendingUp,
 } from "lucide-react";
+import BottomNavigation from "../components/navigation/BottomNavigation";
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("history");
@@ -161,14 +162,14 @@ export default function ProfilePage() {
         </div>
         <div className="flex items-center gap-1">
           <Link
-            href="/notifications"
+            href="#"
             className="relative p-2 hover:bg-[#eef2f5] rounded-full transition-colors"
           >
             <Bell className="h-5 w-5 text-[#343a40]" />
             <span className="absolute top-1.5 right-1.5 block h-2 w-2 rounded-full bg-[#003087]"></span>
           </Link>
           <Link
-            href="/settings"
+            href="#"
             className="p-2 hover:bg-[#eef2f5] rounded-full transition-colors"
           >
             <Settings className="h-5 w-5 text-[#343a40]" />
@@ -520,63 +521,7 @@ export default function ProfilePage() {
         )}
       </div>
 
-      {/* Navigation Bar - Fixed at bottom */}
-      <div className="fixed bottom-0 left-0 right-0 border-t border-[#e0e7eb] bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.05)] z-20">
-        <div className="flex justify-around items-center max-w-md mx-auto px-2 py-1.5">
-          <Link
-            href="/"
-            className="flex flex-col items-center p-1 rounded-md w-16 transition-colors hover:bg-gray-100"
-          >
-            <Home className="h-5 w-5 text-gray-500" />
-            <span className="text-[10px] mt-0.5 text-gray-500">Home</span>
-          </Link>
-          <Link
-            href="/find-parking"
-            className="flex flex-col items-center p-1 rounded-md w-16 transition-colors hover:bg-gray-100"
-          >
-            <Search className="h-5 w-5 text-gray-500" />
-            <span className="text-[10px] mt-0.5 text-gray-500">Find</span>
-          </Link>
-          <Link
-            href="/payments"
-            className="flex flex-col items-center p-1 rounded-md w-16 transition-colors bg-blue-50"
-          >
-            <Wallet className="h-5 w-5 text-[#003087]" />
-            <span className="text-[10px] mt-0.5 text-[#003087] font-medium">
-              Payments
-            </span>
-          </Link>
-          <Link
-            href="/profile"
-            className="flex flex-col items-center p-1 rounded-md w-16 transition-colors hover:bg-gray-100"
-          >
-            <User className="h-5 w-5 text-gray-500" />
-            <span className="text-[10px] mt-0.5 text-gray-500">Profile</span>
-          </Link>
-        </div>
-      </div>
+      <BottomNavigation />
     </div>
   );
 }
-
-/* // Add this at the end of the file
-// Define the animations for Tailwind CSS
-const tailwindStyles = document.createElement("style");
-tailwindStyles.textContent = `
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  @keyframes slideIn {
-    from { transform: translateY(10px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-  .animate-fadeIn {
-    animation: fadeIn 0.3s ease-in-out forwards;
-  }
-  .animate-slideIn {
-    animation: slideIn 0.3s ease-in-out forwards;
-  }
-`;
-typeof document !== "undefined" && document.head.appendChild(tailwindStyles);
- */

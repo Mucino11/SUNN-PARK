@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 // GET /api/profile
 export async function GET() {
@@ -12,19 +12,39 @@ export async function GET() {
     memberSince: "January 2023",
     favoriteZones: ["Zone 5", "Zone 1"],
     vehicles: [
-      { id: 1, plate: "AB 12345", make: "Tesla", model: "Model 3", color: "White", default: true },
-      { id: 2, plate: "CD 67890", make: "Volvo", model: "XC60", color: "Black", default: false }
+      {
+        id: 1,
+        plate: "AB 12345",
+        make: "Tesla",
+        model: "Model 3",
+        color: "White",
+        default: true,
+      },
+      {
+        id: 2,
+        plate: "CD 67890",
+        make: "Volvo",
+        model: "XC60",
+        color: "Black",
+        default: false,
+      },
     ],
     paymentMethods: [
       { id: 1, type: "VISA", last4: "4321", expiry: "05/26", default: true },
-      { id: 2, type: "MasterCard", last4: "8765", expiry: "09/25", default: false },
-      { id: 3, type: "Vipps", last4: "2468", expiry: "07/27", default: false }
+      {
+        id: 2,
+        type: "MasterCard",
+        last4: "8765",
+        expiry: "09/25",
+        default: false,
+      },
+      { id: 3, type: "Vipps", last4: "2468", expiry: "07/27", default: false },
     ],
     stats: {
       totalSpent: "4,250 kr",
       totalHours: "67 hours",
       mostVisitedZone: "Zone 5",
-      averageStay: "2.4 hours"
+      averageStay: "2.4 hours",
     },
     logs: [
       {
@@ -38,7 +58,7 @@ export async function GET() {
         total: "100.50kr",
         zone: "1",
         location: "Zone 1",
-        status: "Completed"
+        status: "Completed",
       },
       {
         id: 2,
@@ -51,7 +71,7 @@ export async function GET() {
         total: "100.50kr",
         zone: "5",
         location: "Zone 5",
-        status: "Completed"
+        status: "Completed",
       },
       {
         id: 3,
@@ -64,9 +84,9 @@ export async function GET() {
         total: "100.50kr",
         zone: "5",
         location: "Zone 5",
-        status: "Completed"
-      }
-    ]
+        status: "Completed",
+      },
+    ],
   };
 
   return NextResponse.json({ data: profileData });
@@ -76,16 +96,17 @@ export async function GET() {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    
-    // This is just a placeholder - you would normally validate and update in your database
-    
+
+    // TODO: Update profile in database
+
     return NextResponse.json({
-      message: 'Profile updated successfully',
-      data: body
+      message: "Profile updated successfully",
+      data: body,
     });
   } catch (error) {
+    console.error("Error updating profile:", error);
     return NextResponse.json(
-      { error: 'Failed to update profile' },
+      { error: "Failed to update profile" },
       { status: 400 }
     );
   }
@@ -95,9 +116,23 @@ export async function PUT(request: Request) {
 export async function GET_VEHICLES() {
   return NextResponse.json({
     data: [
-      { id: 1, plate: "AB 12345", make: "Tesla", model: "Model 3", color: "White", default: true },
-      { id: 2, plate: "CD 67890", make: "Volvo", model: "XC60", color: "Black", default: false }
-    ]
+      {
+        id: 1,
+        plate: "AB 12345",
+        make: "Tesla",
+        model: "Model 3",
+        color: "White",
+        default: true,
+      },
+      {
+        id: 2,
+        plate: "CD 67890",
+        make: "Volvo",
+        model: "XC60",
+        color: "Black",
+        default: false,
+      },
+    ],
   });
 }
 
@@ -106,9 +141,15 @@ export async function GET_PAYMENT_METHODS() {
   return NextResponse.json({
     data: [
       { id: 1, type: "VISA", last4: "4321", expiry: "05/26", default: true },
-      { id: 2, type: "MasterCard", last4: "8765", expiry: "09/25", default: false },
-      { id: 3, type: "Vipps", last4: "2468", expiry: "07/27", default: false }
-    ]
+      {
+        id: 2,
+        type: "MasterCard",
+        last4: "8765",
+        expiry: "09/25",
+        default: false,
+      },
+      { id: 3, type: "Vipps", last4: "2468", expiry: "07/27", default: false },
+    ],
   });
 }
 
@@ -127,7 +168,7 @@ export async function GET_LOGS() {
         total: "100.50kr",
         zone: "1",
         location: "Zone 1",
-        status: "Completed"
+        status: "Completed",
       },
       {
         id: 2,
@@ -140,7 +181,7 @@ export async function GET_LOGS() {
         total: "100.50kr",
         zone: "5",
         location: "Zone 5",
-        status: "Completed"
+        status: "Completed",
       },
       {
         id: 3,
@@ -153,8 +194,8 @@ export async function GET_LOGS() {
         total: "100.50kr",
         zone: "5",
         location: "Zone 5",
-        status: "Completed"
-      }
-    ]
+        status: "Completed",
+      },
+    ],
   });
-} 
+}

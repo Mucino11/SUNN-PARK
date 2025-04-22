@@ -10,7 +10,7 @@ export default function BottomNavigation() {
       <div className="flex justify-center gap-12 max-w-4xl mx-auto">
         {[
           { name: "Home", path: "/", icon: "🏠" },
-          { name: "Find Parking", path: "/findParking", icon: "🅿️" },
+          { name: "Find Parking", path: "/find-parking", icon: "🅿️" },
           { name: "Payments", path: "/payment", icon: "💳" },
           { name: "Profile", path: "/profile", icon: "👤" },
         ].map((item) => (
