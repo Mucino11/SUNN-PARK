@@ -1,46 +1,20 @@
-"use client";
-import { supabase } from "@/lib/supabase";
-import { useEffect, useState } from "react";
+'use client'
 
-export default function Home() {
-  const [connectionStatus, setConnectionStatus] =
-    useState<string>("Checking...");
+import { useRouter } from 'next/navigation'
 
-  useEffect(() => {
-    const testConnection = async () => {
-      try {
-        // Test connection by querying the parking_spots table
-        const { data, error } = await supabase
-          .from("parking_spots")
-          .select("*");
-
-        if (error) {
-          console.error("Connection error:", error);
-          setConnectionStatus("Failed: " + error.message);
-        } else {
-          console.log(
-            "Connection successful! Found",
-            data.length,
-            "parking spots"
-          );
-          console.log("Data:", data);
-          setConnectionStatus("Connected successfully! ✅");
-        }
-      } catch (e) {
-        console.error("Unexpected error:", e);
-        setConnectionStatus("Failed: Unexpected error");
-      }
-    };
-
-    testConnection();
-  }, []);
+export default function IndexPage() {
+  const router = useRouter()
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1 className="text-4xl font-bold">Parking App</h1>
-      <p className="text-xl mt-4">
-        Supabase Connection Status: {connectionStatus}
-      </p>
+    <main className="flex flex-col items-center justify-center h-screen bg-white">
+      <h1 className="text-3xl font-bold mb-6 text-blue-900">SunnPark</h1>
+      <p className="text-gray-700 mb-4">Velkommen til SunnPark!</p>
+      <button
+        onClick={() => router.push('/home')}
+        className="px-6 py-3 bg-blue-300 hover:bg-blue-400 rounded-lg transition"
+      >
+        Gå til Hjem
+      </button>
     </main>
-  );
+  )
 }
