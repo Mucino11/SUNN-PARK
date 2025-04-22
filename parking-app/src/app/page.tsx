@@ -1,20 +1,107 @@
-'use client'
+import { createElement as h } from "react";
+import Header from "./components/navigation/Header";
+import SearchBar from "./components/navigation/SearchBar";
+import OngoingSession from "./components/parking/OngoingSession";
+import ZonesGrid from "./components/parking/ZonesGrid";
+import CalendarButton from "./components/calendar/CalendarButton";
+import BottomNavigation from "./components/navigation/BottomNavigation";
 
-import { useRouter } from 'next/navigation'
+export default function HomePage() {
+  return h(
+    "div",
+    {
+      key: "root",
+      className: "min-h-screen bg-blue-50",
+    },
+    [
+      h(Header, {
+        key: "header",
+        logoSrc: "/logo.svg",
+        profileSrc: "/images/default-avatar.svg",
+      }),
 
-export default function IndexPage() {
-  const router = useRouter()
+      h(
+        "main",
+        {
+          key: "main",
+          className: "px-4 pt-4 pb-20",
+        },
+        [
+          h(SearchBar, { key: "search" }),
 
-  return (
-    <main className="flex flex-col items-center justify-center h-screen bg-white">
-      <h1 className="text-3xl font-bold mb-6 text-blue-900">SunnPark</h1>
-      <p className="text-gray-700 mb-4">Velkommen til SunnPark!</p>
-      <button
-        onClick={() => router.push('/home')}
-        className="px-6 py-3 bg-blue-300 hover:bg-blue-400 rounded-lg transition"
-      >
-        Gå til Hjem
-      </button>
-    </main>
-  )
+          h(
+            "section",
+            {
+              key: "ongoing-session",
+              className: "mt-6",
+            },
+            [
+              h(
+                "h2",
+                {
+                  key: "ongoing-title",
+                  className: "text-xl font-semibold mb-3",
+                },
+                "Ongoing session"
+              ),
+              h(OngoingSession, {
+                key: "session",
+                zone: "Zone 5",
+                startTime: "12:30",
+                endTime: "13:30",
+                image: "/images/car-placeholder.svg",
+              }),
+            ]
+          ),
+
+          h(
+            "section",
+            {
+              key: "zones-calendar",
+              className: "mt-8 flex justify-between items-start",
+            },
+            [
+              h(
+                "div",
+                {
+                  key: "zones",
+                  className: "w-1/2",
+                },
+                [
+                  h(
+                    "h2",
+                    {
+                      key: "zones-title",
+                      className: "text-xl font-semibold mb-3",
+                    },
+                    "Zones"
+                  ),
+                  h(ZonesGrid, { key: "zones-grid" }),
+                ]
+              ),
+              h(
+                "div",
+                {
+                  key: "calendar",
+                  className: "w-1/2 pl-4",
+                },
+                [
+                  h(
+                    "h2",
+                    {
+                      key: "calendar-title",
+                      className: "text-xl font-semibold mb-3",
+                    },
+                    "Calendar"
+                  ),
+                  h(CalendarButton, { key: "calendar-button" }),
+                ]
+              ),
+            ]
+          ),
+        ]
+      ),
+      h(BottomNavigation, { key: "bottom-nav" }),
+    ]
+  );
 }

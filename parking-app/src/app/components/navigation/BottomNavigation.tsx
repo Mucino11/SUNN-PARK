@@ -1,24 +1,19 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAuth } from "../../context/AuthContext";
 
 export default function BottomNavigation() {
   const pathname = usePathname();
-  const { user, signOut } = useAuth();
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-4 z-50">
-      <div className="flex justify-center gap-12 max-w-4xl mx-auto">
+      <div className="flex justify-center gap-8 max-w-4xl mx-auto">
         {[
           { name: "Home", path: "/", icon: "🏠" },
           { name: "Find Parking", path: "/find-parking", icon: "🅿️" },
           { name: "Payments", path: "/payment", icon: "💳" },
-          {
-            name: user ? "Profile" : "Login",
-            path: user ? "/profile" : "/login",
-            icon: "👤",
-          },
+          { name: "Login", path: "/login", icon: "🔑" },
+          { name: "Profile", path: "/profile", icon: "👤" },
         ].map((item) => (
           <Link
             key={item.path}
