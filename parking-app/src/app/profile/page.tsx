@@ -1,3 +1,5 @@
+// this is the profile pag,. testing
+
 "use client";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,7 +23,6 @@ import {
   ChevronRight,
   TrendingUp,
 } from "lucide-react";
-import BottomNavigation from "@/components/BottomNavigation";
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("history");
@@ -519,13 +520,46 @@ export default function ProfilePage() {
         )}
       </div>
 
-      {/* Remove the custom bottom navigation and use the shared component */}
-      <BottomNavigation />
+      {/* Navigation Bar - Fixed at bottom */}
+      <div className="fixed bottom-0 left-0 right-0 border-t border-[#e0e7eb] bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.05)] z-20">
+        <div className="flex justify-around items-center max-w-md mx-auto px-2 py-1.5">
+          <Link
+            href="/"
+            className="flex flex-col items-center p-1 rounded-md w-16 transition-colors hover:bg-gray-100"
+          >
+            <Home className="h-5 w-5 text-gray-500" />
+            <span className="text-[10px] mt-0.5 text-gray-500">Home</span>
+          </Link>
+          <Link
+            href="/find-parking"
+            className="flex flex-col items-center p-1 rounded-md w-16 transition-colors hover:bg-gray-100"
+          >
+            <Search className="h-5 w-5 text-gray-500" />
+            <span className="text-[10px] mt-0.5 text-gray-500">Find</span>
+          </Link>
+          <Link
+            href="/payments"
+            className="flex flex-col items-center p-1 rounded-md w-16 transition-colors bg-blue-50"
+          >
+            <Wallet className="h-5 w-5 text-[#003087]" />
+            <span className="text-[10px] mt-0.5 text-[#003087] font-medium">
+              Payments
+            </span>
+          </Link>
+          <Link
+            href="/profile"
+            className="flex flex-col items-center p-1 rounded-md w-16 transition-colors hover:bg-gray-100"
+          >
+            <User className="h-5 w-5 text-gray-500" />
+            <span className="text-[10px] mt-0.5 text-gray-500">Profile</span>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
 
-// Add this at the end of the file
+/* // Add this at the end of the file
 // Define the animations for Tailwind CSS
 const tailwindStyles = document.createElement("style");
 tailwindStyles.textContent = `
@@ -545,3 +579,4 @@ tailwindStyles.textContent = `
   }
 `;
 typeof document !== "undefined" && document.head.appendChild(tailwindStyles);
+ */

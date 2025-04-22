@@ -1,7 +1,6 @@
 "use client";
 
 import { createElement as h } from "react";
-import Link from "next/link";
 
 interface OngoingSessionProps {
   zone: string;
@@ -44,12 +43,11 @@ export default function OngoingSession({
         ]
       ),
       h(
-        Link,
+        "button",
         {
           key: "view-button",
-          href: "/zoneDetails",
-          className:
-            "px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors",
+          className: "px-4 py-2 bg-gray-100 rounded-lg text-sm",
+          onClick: () => console.log("View clicked"),
         },
         "View"
       ),

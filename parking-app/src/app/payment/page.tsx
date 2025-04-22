@@ -4,6 +4,7 @@ import doctorImage from "../images/doctor-1.jpg";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import BottomNavigation from "../components/navigation/BottomNavigation";
+import Link from "next/link";
 
 export default function PaymentPage() {
   const router = useRouter();
@@ -24,6 +25,7 @@ export default function PaymentPage() {
     console.log("Credit Card Information:", cardInfo);
     // Here you would typically process the payment
     // For now, we just log it
+    alert("Payment and Reservation confirmed");
   };
 
   return (
@@ -36,13 +38,15 @@ export default function PaymentPage() {
           &#8592;
         </button>
         <h2 className="font-bold text-2xl">Confirm Reservation</h2>
-        <Image
-          src={doctorImage}
-          alt="Profile"
-          width={50}
-          height={50}
-          className="rounded-full"
-        />
+        <Link href="/profile">
+          <Image
+            src={doctorImage}
+            alt="Profile"
+            width={50}
+            height={50}
+            className="rounded-full cursor-pointer hover:opacity-90 transition-opacity"
+          />
+        </Link>
       </div>
 
       <div className="flex gap-8 mb-8">

@@ -1,26 +1,13 @@
-"use client";
 import Image from "next/image";
 import doctorImage from "../images/doctor-2.jpg";
 import map from "../images/map.png";
 import BottomNavigation from "../components/navigation/BottomNavigation";
-import { useRouter } from "next/navigation";
 
 export default function ZoneDetails() {
-  const router = useRouter();
-
-  const handleBackClick = () => {
-    router.back();
-  };
-
   return (
     <div className="p-8 max-w-5xl mx-auto">
       <div className="flex justify-between items-center mb-8">
-        <button
-          onClick={handleBackClick}
-          className="text-3xl hover:text-gray-600 transition-colors"
-        >
-          &#8592;
-        </button>
+        <button className="text-3xl">&#8592;</button>
         <h2 className="font-bold text-2xl">Zone Details</h2>
         <Image
           src={doctorImage}
