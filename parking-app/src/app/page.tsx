@@ -17,7 +17,7 @@ export default function HomePage() {
       h(Header, {
         key: "header",
         logoSrc: "/logo.svg",
-        profileSrc: "/images/default-avatar.svg",
+        profileSrc: "/img/pexels-linkedin-2182970.jpg",
       }),
 
       h(
@@ -40,7 +40,7 @@ export default function HomePage() {
                 "h2",
                 {
                   key: "ongoing-title",
-                  className: "text-xl font-semibold mb-3",
+                  className: "text-xl font-semibold mb-3 text-gray-900",
                 },
                 "Ongoing session"
               ),
@@ -72,7 +72,7 @@ export default function HomePage() {
                     "h2",
                     {
                       key: "zones-title",
-                      className: "text-xl font-semibold mb-3",
+                      className: "text-xl font-semibold mb-3 text-gray-900",
                     },
                     "Zones"
                   ),
@@ -90,7 +90,7 @@ export default function HomePage() {
                     "h2",
                     {
                       key: "calendar-title",
-                      className: "text-xl font-semibold mb-3",
+                      className: "text-xl font-semibold mb-3 text-gray-900",
                     },
                     "Calendar"
                   ),

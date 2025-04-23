@@ -23,6 +23,7 @@ const Header = ({ logoSrc, profileSrc }: HeaderProps) => {
     { name: "Find Parking", path: "/find-parking", icon: "🅿️" },
     { name: "Payments", path: "/payment", icon: "💳" },
     { name: "Profile", path: "/profile", icon: "👤" },
+    { name: "Login", path: "/login", icon: "🔑" },
   ];
 
   return h(

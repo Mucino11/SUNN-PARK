@@ -12,8 +12,8 @@ export default function BottomNavigation() {
           { name: "Home", path: "/", icon: "🏠" },
           { name: "Find Parking", path: "/find-parking", icon: "🅿️" },
           { name: "Payments", path: "/payment", icon: "💳" },
-          { name: "Login", path: "/login", icon: "🔑" },
           { name: "Profile", path: "/profile", icon: "👤" },
+          { name: "Login", path: "/login", icon: "🔑" },
         ].map((item) => (
           <Link
             key={item.path}

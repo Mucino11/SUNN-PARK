@@ -28,15 +28,17 @@ export default function PaymentPage() {
   };
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-8 max-w-4xl mx-auto bg-blue-50 min-h-screen">
       <div className="flex justify-between items-center mb-8">
         <button
           onClick={handleBackClick}
-          className="text-3xl hover:text-gray-600 transition-colors"
+          className="text-3xl text-gray-800 hover:text-gray-600 transition-colors"
         >
           &#8592;
         </button>
-        <h2 className="font-bold text-2xl">Confirm Reservation</h2>
+        <h2 className="font-bold text-2xl text-gray-900">
+          Confirm Reservation
+        </h2>
         <Link href="/profile">
           <Image
             src="/img/pexels-linkedin-2182970.jpg"
@@ -56,40 +58,42 @@ export default function PaymentPage() {
               5
             </div>
           </div>
-          <p>
-            <strong>Zone:</strong> 5
+          <p className="text-gray-800">
+            <strong className="text-gray-900">Zone:</strong> 5
           </p>
-          <p>
-            <strong>Address:</strong> 1453 Bjornemyr
+          <p className="text-gray-800">
+            <strong className="text-gray-900">Address:</strong> 1453 Bjornemyr
           </p>
-          <p>
-            <strong>Parking spot:</strong> Spot 10
+          <p className="text-gray-800">
+            <strong className="text-gray-900">Parking spot:</strong> Spot 10
           </p>
-          <p>
-            <strong>Date:</strong> 11/04/2025
+          <p className="text-gray-800">
+            <strong className="text-gray-900">Date:</strong> 11/04/2025
           </p>
-          <p>
-            <strong>Duration:</strong> 3 hours
+          <p className="text-gray-800">
+            <strong className="text-gray-900">Duration:</strong> 3 hours
           </p>
-          <p>
-            <strong>Hours:</strong> 9am to 12pm
+          <p className="text-gray-800">
+            <strong className="text-gray-900">Hours:</strong> 9am to 12pm
           </p>
         </div>
 
         <div className="flex-1">
-          <h3 className="text-2xl font-semibold mb-4">Choose Payment Method</h3>
+          <h3 className="text-2xl font-semibold mb-4 text-gray-900">
+            Choose Payment Method
+          </h3>
 
           <div className="space-y-3 mb-6">
             <button
               onClick={() => setShowCreditCardForm(true)}
-              className="w-full p-4 rounded-xl bg-pink-200 text-left text-lg hover:bg-pink-300 transition-colors"
+              className="w-full p-4 rounded-xl bg-pink-200 text-gray-900 text-left text-lg hover:bg-pink-300 transition-colors"
             >
               💳 Credit Card
             </button>
-            <button className="w-full p-4 rounded-xl bg-orange-200 text-left text-lg hover:bg-orange-300 transition-colors">
+            <button className="w-full p-4 rounded-xl bg-orange-200 text-gray-900 text-left text-lg hover:bg-orange-300 transition-colors">
               📱 Betal med Vipps
             </button>
-            <button className="w-full p-4 rounded-xl bg-gray-200 text-left text-lg hover:bg-gray-300 transition-colors">
+            <button className="w-full p-4 rounded-xl bg-gray-200 text-gray-900 text-left text-lg hover:bg-gray-300 transition-colors">
               🅿️ PayPal
             </button>
           </div>
@@ -103,7 +107,7 @@ export default function PaymentPage() {
                 <input
                   type="text"
                   maxLength={16}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 text-gray-900"
                   value={cardInfo.cardNumber}
                   onChange={(e) =>
                     setCardInfo({ ...cardInfo, cardNumber: e.target.value })
@@ -161,7 +165,7 @@ export default function PaymentPage() {
           )}
 
           <div className="flex justify-between mb-4 text-lg">
-            <span>Total</span>
+            <span className="text-gray-800">Total</span>
             <span className="text-green-600 font-bold">100.50kr / 3 hrs</span>
           </div>
 

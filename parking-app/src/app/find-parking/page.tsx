@@ -53,14 +53,14 @@ export default function FindParkingPage() {
           <input
             type="text"
             placeholder="Search for parking spots..."
-            className="w-full px-4 py-3 rounded-xl shadow bg-white text-sm focus:outline-none"
+            className="w-full px-4 py-3 rounded-xl shadow bg-white text-gray-800 placeholder-gray-500 text-sm focus:outline-none"
           />
         </div>
 
         <div className="absolute bottom-20 left-4 right-4 z-10 bg-white rounded-2xl p-4 shadow-md">
           <div className="flex justify-between items-center">
             <div className="flex-1 flex flex-col items-center border-r border-gray-200">
-              <p className="font-semibold mb-2 text-xs sm:text-sm">
+              <p className="font-semibold mb-2 text-xs sm:text-sm text-gray-800">
                 Find Parking
               </p>
               <div className="flex gap-2">
@@ -78,10 +78,12 @@ export default function FindParkingPage() {
               </div>
             </div>
             <div className="flex-1 flex flex-col items-center">
-              <p className="font-semibold mb-2 text-xs sm:text-sm">Reserve</p>
+              <p className="font-semibold mb-2 text-xs sm:text-sm text-gray-800">
+                Reserve
+              </p>
               <button
                 onClick={() => router.push("/reserve")}
-                className="text-blue-800 text-xl font-bold"
+                className="text-blue-600 text-xl font-bold hover:text-blue-700"
               >
                 +
               </button>
