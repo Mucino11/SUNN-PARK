@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { use } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { 
   ArrowLeft, 
   Calendar, 
@@ -16,125 +16,54 @@ import {
   Tag,
   Hash
 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { getParkingSession } from "@/lib/database";
 
-type ParkingSession = {
-  id: number;
-  date: string;
-  formattedDate: string;
-  duration: string;
-  startTime: string;
-  endTime: string;
-  parking: string;
-  total: string;
-  zone: string;
-  location: string;
-  status: string;
-  vehicle: {
-    plate: string;
-    make: string;
-    model: string;
-  };
-  payment: {
-    type: string;
-    last4?: string;
-  };
-  details: {
-    parkingRate: string;
-    subtotal: string;
-    discount: string;
-    total: string;
-  };
-  purpose: string;
-  receipt: boolean;
-};
-
-export default function ParkingSessionPage({ params }: { params: Promise<{ id: string }> }) {
-  const unwrappedParams = use(params);
-  const id = unwrappedParams.id;
+export default function ParkingSessionPage({ params }: { params: { id: string } }) {
+  const id = params.id;
+  const router = useRouter();
   
-  const [session, setSession] = useState<ParkingSession | null>(null);
+  const [session, setSession] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchSession = async () => {
       try {
-        // Fetch mock data - replace with actual API call in production
-        const mockSessions: Record<string, ParkingSession> = {
-          "1": {
-            id: 1,
-            date: "11/04/2025",
-            formattedDate: "April 11, 2025",
-            duration: "3 hours",
-            startTime: "08:30",
-            endTime: "11:30",
-            parking: "Spot 10",
-            total: "100.50kr",
-            zone: "1",
-            location: "Zone 1",
-            status: "Completed",
-            vehicle: { plate: "AB 12345", make: "Tesla", model: "Model 3" },
-            payment: { type: "VISA", last4: "4321" },
-            details: { parkingRate: "33.50kr/hr", subtotal: "100.50kr", discount: "0kr", total: "100.50kr" },
-            purpose: "Visit",
-            receipt: true
-          },
-          "2": {
-            id: 2,
-            date: "10/04/2025",
-            formattedDate: "April 10, 2025",
-            duration: "3 hours",
-            startTime: "13:15",
-            endTime: "16:15",
-            parking: "Spot 10",
-            total: "100.50kr",
-            zone: "5",
-            location: "Zone 5",
-            status: "Completed",
-            vehicle: { plate: "AB 12345", make: "Tesla", model: "Model 3" },
-            payment: { type: "Vipps" },
-            details: { parkingRate: "33.50kr/hr", subtotal: "100.50kr", discount: "0kr", total: "100.50kr" },
-            purpose: "Visit",
-            receipt: true
-          },
-          "3": {
-            id: 3,
-            date: "09/04/2025",
-            formattedDate: "April 9, 2025",
-            duration: "3 hours",
-            startTime: "10:00",
-            endTime: "13:00",
-            parking: "Spot 10",
-            total: "100.50kr",
-            zone: "5",
-            location: "Zone 5",
-            status: "Completed",
-            vehicle: { plate: "CD 67890", make: "Volvo", model: "XC60" },
-            payment: { type: "MasterCard", last4: "8765" },
-            details: { parkingRate: "33.50kr/hr", subtotal: "100.50kr", discount: "0kr", total: "100.50kr" },
-            purpose: "Visit",
-            receipt: true
-          }
-        };
-
-        // Simulate network delay
-        setTimeout(() => {
-          const sessionData = mockSessions[id];
-          if (sessionData) {
-            setSession(sessionData);
-          } else {
-            setError("Parking session not found");
-          }
+        // Check if user is authenticated
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          // User is not authenticated, redirect to login
+          router.push("/login");
+          return;
+        }
+        
+        // Get parking session data
+        const { data, error } = await getParkingSession(id);
+        
+        if (error) {
+          setError(error.message || "Error loading session data");
           setLoading(false);
-        }, 300);
+          return;
+        }
+        
+        if (data) {
+          setSession(data);
+        } else {
+          setError("Parking session not found");
+        }
+        
+        setLoading(false);
       } catch (err) {
+        console.error("Error fetching session:", err);
         setError("Failed to load parking session details");
         setLoading(false);
       }
     };
 
     fetchSession();
-  }, [id]);
+  }, [id, router]);
 
   if (loading) {
     return (

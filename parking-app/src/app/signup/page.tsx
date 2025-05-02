@@ -3,13 +3,16 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Mail, Lock, User, Phone, Eye, EyeOff, MapPin, Car } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Mail, Lock, User, Phone, Eye, EyeOff, MapPin, Car, AtSign } from "lucide-react";
+import { signUp } from "@/lib/database";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
@@ -17,6 +20,9 @@ export default function SignupPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -24,23 +30,51 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     
     if (password !== confirmPassword) {
-      alert("Passwords don't match");
+      setError("Passwords don't match");
       return;
     }
     
     setLoading(true);
     
-    // In a real app, you would implement the signup logic here
-    // For now, we'll just simulate a request with a timeout
-    setTimeout(() => {
+    try {
+      const { user, error } = await signUp(
+        email,
+        password,
+        fullName,
+        phoneNumber,
+        address,
+        licensePlate,
+        username
+      );
+
+      if (error) {
+        setError(error.message || "Error creating account");
+        setLoading(false);
+        return;
+      }
+
+      // Successful signup
+      console.log("Account created successfully:", user);
+      
+      // Redirect to login page
+      router.push("/login?registered=true");
+    } catch (err) {
+      console.error("Signup error:", err);
+      setError("An unexpected error occurred. Please try again.");
       setLoading(false);
-      console.log("Signup submitted", { email, password, fullName, phoneNumber, address, licensePlate });
-      // Redirect user after successful signup
-      // router.push("/profile");
-    }, 1000);
+    }
   };
+
+  // Generate a suggested username when email changes
+  useEffect(() => {
+    if (email && !username) {
+      const suggestedUsername = email.split('@')[0];
+      setUsername(suggestedUsername);
+    }
+  }, [email, username]);
 
   return (
     <div className={`flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-white to-gray-50 p-4 ${mounted ? 'animate-fadeIn' : 'opacity-0'}`}>
@@ -52,6 +86,7 @@ export default function SignupPage() {
               src="/img/SunnPark-Logo.PNG"
               alt="Parking App Logo"
               fill
+              sizes="(max-width: 768px) 100vw, 300px"
               className="object-contain"
               priority
             />
@@ -67,6 +102,13 @@ export default function SignupPage() {
         <p className="text-center text-gray-600 mb-8">
           Join SUNN Park to easily find and book parking spots
         </p>
+
+        {/* Error display */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 text-red-800 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -96,6 +138,21 @@ export default function SignupPage() {
               className="w-full bg-gray-50 border border-gray-200 rounded-lg py-3.5 px-10 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#73A9E6] focus:border-transparent transition-all"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          {/* Username */}
+          <div className="group relative transition-all duration-300">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400 group-focus-within:text-[#003087]">
+              <AtSign className="h-5 w-5 transition-colors" />
+            </div>
+            <input 
+              type="text" 
+              placeholder="Username"
+              className="w-full bg-gray-50 border border-gray-200 rounded-lg py-3.5 px-10 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#73A9E6] focus:border-transparent transition-all"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
