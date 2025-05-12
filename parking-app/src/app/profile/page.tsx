@@ -4,16 +4,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
-  Home,
-  Search,
   CreditCard,
-  User,
   Car,
   Bell,
   Clock,
-  Wallet,
   Settings,
   Calendar,
   MapPin,
@@ -21,8 +18,14 @@ import {
   Plus,
   Filter,
   ChevronRight,
-  TrendingUp,
+  LogOut,
 } from "lucide-react";
+import {
+  getUserProfile,
+  UserProfile as UserProfileType,
+  signOut,
+} from "@/lib/database";
+import { supabase } from "@/lib/supabase";
 import BottomNavigation from "../components/navigation/BottomNavigation";
 
 export default function ProfilePage() {
@@ -30,10 +33,77 @@ export default function ProfilePage() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [tabTransition, setTabTransition] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [profileData, setProfileData] = useState<UserProfileType | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
+  const router = useRouter();
+
+  // Effect for fetching user profile data
   useEffect(() => {
     setMounted(true);
-  }, []);
+
+    const fetchUserProfile = async () => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          router.push("/login");
+          return;
+        }
+
+        const { data, error } = await getUserProfile(user.id);
+
+        if (error) {
+          setError(error.message || "Error loading profile data");
+        } else if (data) {
+          setProfileData(data);
+        } else {
+          setError("No profile data found");
+        }
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+        setError("Failed to load profile data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, [router]);
+
+  // Effect for CSS animations - Moved here to ensure consistent hook order
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      const tailwindStyles = document.createElement("style");
+      tailwindStyles.textContent = `
+        @keyframes fadeIn {
+          from { opacity: 0; } 
+          to { opacity: 1; }
+        }
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-in-out forwards;
+        }
+        .animate-slideIn {
+          animation: slideIn 0.3s ease-in-out forwards;
+        }
+      `;
+      document.head.appendChild(tailwindStyles);
+
+      // Cleanup function
+      return () => {
+        if (tailwindStyles.parentNode) {
+          tailwindStyles.parentNode.removeChild(tailwindStyles);
+        }
+      };
+    }
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   const handleTabChange = (tab: "history" | "vehicles" | "payment") => {
     if (tab !== activeTab) {
@@ -47,98 +117,101 @@ export default function ProfilePage() {
     }
   };
 
-  // Mock data based on the image, updated for hospital context
-  const profileData = {
-    name: "John Smith",
-    avatar: "/img/pexels-linkedin-2182970.jpg",
-    email: "john.smith@example.com",
-    phone: "+47 123 45 678",
-    address: "B R A Veien 6A",
-    memberSince: "January 2023",
-    favoriteZones: ["Zone 5", "Zone 1"],
-    vehicles: [
-      {
-        id: 1,
-        plate: "AB 12345",
-        make: "Tesla",
-        model: "Model 3",
-        color: "White",
-        default: true,
-      },
-      {
-        id: 2,
-        plate: "CD 67890",
-        make: "Volvo",
-        model: "XC60",
-        color: "Black",
-        default: false,
-      },
-    ],
-    paymentMethods: [
-      { id: 1, type: "VISA", last4: "4321", expiry: "05/26", default: true },
-      {
-        id: 2,
-        type: "MasterCard",
-        last4: "8765",
-        expiry: "09/25",
-        default: false,
-      },
-      { id: 3, type: "Vipps", last4: "2468", expiry: "07/27", default: false },
-    ],
-    stats: {
-      totalSpent: "4,250 kr",
-      totalHours: "67 hours",
-      mostVisitedZone: "Zone 5",
-      averageStay: "2.4 hours",
-    },
-    logs: [
-      {
-        id: 1,
-        date: "11/04/2025",
-        formattedDate: "April 11, 2025",
-        duration: "3 hours",
-        startTime: "08:30",
-        endTime: "11:30",
-        parking: "Spot 10",
-        total: "100.50kr",
-        zone: "1",
-        location: "Zone 1",
-        status: "Completed",
-      },
-      {
-        id: 2,
-        date: "10/04/2025",
-        formattedDate: "April 10, 2025",
-        duration: "3 hours",
-        startTime: "13:15",
-        endTime: "16:15",
-        parking: "Spot 10",
-        total: "100.50kr",
-        zone: "5",
-        location: "Zone 5",
-        status: "Completed",
-      },
-      {
-        id: 3,
-        date: "09/04/2025",
-        formattedDate: "April 9, 2025",
-        duration: "3 hours",
-        startTime: "10:00",
-        endTime: "13:00",
-        parking: "Spot 10",
-        total: "100.50kr",
-        zone: "5",
-        location: "Zone 5",
-        status: "Completed",
-      },
-    ],
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
+
+  // If the profile is loading, show a loading spinner
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen items-center justify-center bg-[#f8f9fa]">
+        <div className="w-16 h-16 border-4 border-[#003087] border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-[#1a1a1a]">Loading profile...</p>
+      </div>
+    );
+  }
+
+  // If there was an error, show an error message
+  if (error || !profileData) {
+    return (
+      <div className="flex flex-col min-h-screen items-center justify-center bg-[#f8f9fa] p-4">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-[#1a1a1a] mb-2">Oops!</h2>
+          <p className="text-gray-600 mb-4">
+            {error || "Failed to load profile data"}
+          </p>
+          <button
+            onClick={() => router.push("/login")}
+            className="px-4 py-2 bg-[#003087] text-white rounded-lg hover:bg-[#002a77] transition-colors"
+          >
+            Return to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Filter options
   const filterOptions = {
     timeRange: ["Last 7 days", "Last 30 days", "Last 3 months", "Last year"],
     zones: ["All zones", "Zone 1", "Zone 5"],
     status: ["All", "Completed", "Active", "Canceled"],
+  };
+
+  const formattedProfileData = {
+    name: profileData.user.full_name,
+    avatar: profileData.user.avatar_url,
+    email: profileData.user.email,
+    phone: profileData.user.phone_number,
+    address: profileData.user.address,
+    memberSince: new Date(profileData.user.member_since).toLocaleDateString(
+      "en-US",
+      { month: "long", year: "numeric" }
+    ),
+    favoriteZones: [profileData.stats.most_visited_zone || "None"],
+    vehicles: profileData.vehicles.map((v) => ({
+      id: v.id,
+      plate: v.plate,
+      make: v.make,
+      model: v.model,
+      color: v.color,
+      default: v.is_default,
+    })),
+    paymentMethods: profileData.paymentMethods.map((p) => ({
+      id: p.id,
+      type: p.type,
+      last4: p.last4,
+      expiry: p.expiry,
+      default: p.is_default,
+    })),
+    stats: {
+      totalSpent: profileData.stats.total_spent || "0 kr",
+      totalHours: profileData.stats.total_hours || "0 hours",
+      mostVisitedZone: profileData.stats.most_visited_zone || "None",
+      averageStay: profileData.stats.average_stay || "0 hours",
+    },
+    logs: profileData.sessions.map((s) => ({
+      id: s.id,
+      date: new Date(s.date).toLocaleDateString("en-US", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }),
+      formattedDate: s.formatted_date,
+      duration: s.duration,
+      startTime: s.start_time,
+      endTime: s.end_time,
+      parking: s.parking_spot,
+      total: s.total,
+      zone: s.zone,
+      location: s.location,
+      status: s.status,
+    })),
   };
 
   return (
@@ -174,10 +247,17 @@ export default function ProfilePage() {
           >
             <Settings className="h-5 w-5 text-[#343a40]" />
           </Link>
+          <button
+            onClick={handleLogout}
+            className="p-2 hover:bg-[#eef2f5] rounded-full transition-colors text-red-500"
+            title="Log out"
+          >
+            <LogOut className="h-5 w-5" />
+          </button>
           <div className="h-8 w-8 rounded-full bg-[#003087] overflow-hidden border border-white ml-2">
-            {profileData.avatar ? (
+            {formattedProfileData.avatar ? (
               <Image
-                src={profileData.avatar}
+                src={formattedProfileData.avatar}
                 alt="Profile"
                 width={32}
                 height={32}
@@ -185,7 +265,7 @@ export default function ProfilePage() {
               />
             ) : (
               <div className="h-full w-full flex items-center justify-center text-white font-medium text-sm">
-                {profileData.name.charAt(0)}
+                {formattedProfileData.name.charAt(0)}
               </div>
             )}
           </div>
@@ -198,9 +278,9 @@ export default function ProfilePage() {
           <div className="p-5">
             <div className="flex items-center">
               <div className="h-16 w-16 rounded-full bg-[#e6f0fa] overflow-hidden mr-4 border-2 border-white flex-shrink-0">
-                {profileData.avatar ? (
+                {formattedProfileData.avatar ? (
                   <Image
-                    src={profileData.avatar}
+                    src={formattedProfileData.avatar}
                     alt="Profile"
                     width={64}
                     height={64}
@@ -208,29 +288,31 @@ export default function ProfilePage() {
                   />
                 ) : (
                   <div className="h-full w-full flex items-center justify-center text-[#003087] font-semibold text-xl">
-                    {profileData.name.charAt(0)}
+                    {formattedProfileData.name.charAt(0)}
                   </div>
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-[#1a1a1a] truncate">
-                    {profileData.name}
+                    {formattedProfileData.name}
                   </h3>
                   <button className="text-[#003087] text-sm font-medium flex items-center gap-1 hover:text-blue-800 transition-colors flex-shrink-0 ml-2">
                     <Edit2 className="h-3.5 w-3.5" /> Edit
                   </button>
                 </div>
                 <p className="text-sm text-gray-500 truncate">
-                  {profileData.email}
+                  {formattedProfileData.email}
                 </p>
-                <p className="text-sm text-gray-500">{profileData.phone}</p>
+                <p className="text-sm text-gray-500">
+                  {formattedProfileData.phone}
+                </p>
               </div>
             </div>
 
             <div className="mt-3 flex items-center text-xs text-gray-600 bg-gray-50 p-2 rounded-md">
               <MapPin className="h-3.5 w-3.5 mr-1.5 flex-shrink-0" />
-              <span className="truncate">{profileData.address}</span>
+              <span className="truncate">{formattedProfileData.address}</span>
             </div>
 
             {/* Quick Stats */}
@@ -240,7 +322,7 @@ export default function ProfilePage() {
                   Total Spent
                 </div>
                 <div className="text-lg font-semibold text-[#1a1a1a]">
-                  {profileData.stats.totalSpent}
+                  {formattedProfileData.stats.totalSpent}
                 </div>
               </div>
               <div className="bg-[#e0ebe5] rounded-lg p-3">
@@ -248,7 +330,7 @@ export default function ProfilePage() {
                   Total Time
                 </div>
                 <div className="text-lg font-semibold text-[#1a1a1a]">
-                  {profileData.stats.totalHours}
+                  {formattedProfileData.stats.totalHours}
                 </div>
               </div>
             </div>
@@ -303,35 +385,36 @@ export default function ProfilePage() {
                 : "opacity-100 translate-y-0"
             } transition-all duration-150`}
           >
-            {profileData.vehicles.map((vehicle) => (
+            {formattedProfileData.vehicles.map((vehicle) => (
               <div
                 key={vehicle.id}
                 className="bg-white rounded-lg shadow-sm p-4 border border-[#e0e7eb]"
               >
                 <div className="flex justify-between items-center">
                   <div className="flex items-center min-w-0">
-                    <div className="bg-[#e6f0fa] rounded-full p-2.5 mr-3 flex-shrink-0">
+                    <div className="h-10 w-10 rounded-full bg-[#e6f0fa] flex items-center justify-center mr-3 flex-shrink-0">
                       <Car className="h-5 w-5 text-[#003087]" />
                     </div>
                     <div className="min-w-0">
-                      <div className="font-semibold text-[#1a1a1a] truncate">
-                        {vehicle.plate}
+                      <div className="text-sm font-medium text-[#1a1a1a] truncate">
+                        {vehicle.make} {vehicle.model}
                       </div>
-                      <div className="text-xs text-gray-500 truncate">
-                        {vehicle.make} {vehicle.model} • {vehicle.color}
+                      <div className="text-xs text-gray-500">
+                        {vehicle.plate}
                       </div>
                     </div>
                   </div>
                   {vehicle.default && (
-                    <div className="bg-[#c4dbf3] text-[#003087] text-xs font-medium py-0.5 px-2 rounded-full ml-2 flex-shrink-0">
+                    <span className="px-2 py-1 bg-[#e6f0fa] text-[#003087] text-xs font-medium rounded-full">
                       Default
-                    </div>
+                    </span>
                   )}
                 </div>
               </div>
             ))}
-            <button className="w-full bg-white border border-[#e0e7eb] rounded-lg py-3 px-4 flex items-center justify-center text-[#003087] font-medium text-sm hover:bg-[#eef2f5] transition-colors">
-              <Plus className="h-4 w-4 mr-1.5" /> Add New Vehicle
+            <button className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-[#003087] hover:text-[#003087] transition-colors">
+              <Plus className="h-5 w-5" />
+              Add Vehicle
             </button>
           </div>
         )}
@@ -345,67 +428,36 @@ export default function ProfilePage() {
                 : "opacity-100 translate-y-0"
             } transition-all duration-150`}
           >
-            {profileData.paymentMethods.map((method) => (
+            {formattedProfileData.paymentMethods.map((method) => (
               <div
                 key={method.id}
                 className="bg-white rounded-lg shadow-sm p-4 border border-[#e0e7eb]"
               >
                 <div className="flex justify-between items-center">
                   <div className="flex items-center min-w-0">
-                    <div
-                      className={`${
-                        method.type === "Vipps"
-                          ? "bg-[#ff5b24]"
-                          : "bg-[#e6f0fa]"
-                      } rounded-full p-2.5 mr-3 flex-shrink-0`}
-                    >
-                      <CreditCard
-                        className={`h-5 w-5 ${
-                          method.type === "Vipps"
-                            ? "text-white"
-                            : "text-[#003087]"
-                        }`}
-                      />
+                    <div className="h-10 w-10 rounded-full bg-[#e6f0fa] flex items-center justify-center mr-3 flex-shrink-0">
+                      <CreditCard className="h-5 w-5 text-[#003087]" />
                     </div>
                     <div className="min-w-0">
-                      <div
-                        className={`font-semibold ${
-                          method.type === "Vipps"
-                            ? "text-[#ff5b24]"
-                            : "text-[#1a1a1a]"
-                        } truncate`}
-                      >
-                        {method.type}{" "}
-                        {method.type !== "Vipps" ? `•••• ${method.last4}` : ""}
+                      <div className="text-sm font-medium text-[#1a1a1a]">
+                        {method.type} •••• {method.last4}
                       </div>
-                      {method.type !== "Vipps" && (
-                        <div className="text-xs text-gray-500">
-                          Expires {method.expiry}
-                        </div>
-                      )}
-                      {method.type === "Vipps" && (
-                        <div className="text-xs text-gray-500">
-                          Mobile Payment
-                        </div>
-                      )}
+                      <div className="text-xs text-gray-500">
+                        Expires {method.expiry}
+                      </div>
                     </div>
                   </div>
                   {method.default && (
-                    <div
-                      className={`${
-                        method.type === "Vipps"
-                          ? "bg-[#ffefe9] text-[#ff5b24]"
-                          : "bg-[#c4dbf3] text-[#003087]"
-                      } text-xs font-medium py-0.5 px-2 rounded-full ml-2 flex-shrink-0`}
-                    >
+                    <span className="px-2 py-1 bg-[#e6f0fa] text-[#003087] text-xs font-medium rounded-full">
                       Default
-                    </div>
+                    </span>
                   )}
                 </div>
               </div>
             ))}
-            <button className="w-full bg-white border border-[#e0e7eb] rounded-lg py-3 px-4 flex items-center justify-center text-[#003087] font-medium text-sm hover:bg-[#eef2f5] transition-colors">
-              <Plus className="h-4 w-4 mr-1.5" /> Add Payment Method
+            <button className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-[#003087] hover:text-[#003087] transition-colors">
+              <Plus className="h-5 w-5" />
+              Add Payment Method
             </button>
           </div>
         )}
@@ -479,44 +531,56 @@ export default function ProfilePage() {
             )}
 
             {/* Logs */}
-            {profileData.logs.map((log) => (
-              <Link
-                key={log.id}
-                href={`/parking-session/${log.id}`}
-                className="block bg-white rounded-lg shadow-sm p-4 border border-[#e0e7eb] hover:border-[#c4dbf3] hover:shadow-md transition-all duration-150 group"
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <div className="flex items-center text-xs text-gray-500 mb-0.5">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      <span>{log.date}</span>
+            {formattedProfileData.logs.length > 0 ? (
+              formattedProfileData.logs.map((log) => (
+                <Link
+                  key={log.id}
+                  href={`/parking-session/${log.id}`}
+                  className="block bg-white rounded-lg shadow-sm p-4 border border-[#e0e7eb] hover:border-[#c4dbf3] hover:shadow-md transition-all duration-150 group"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <div className="flex items-center text-xs text-gray-500 mb-0.5">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        <span>{log.date}</span>
+                      </div>
+                      <div className="text-sm font-semibold text-[#1a1a1a]">
+                        {log.total}
+                      </div>
                     </div>
-                    <div className="text-sm font-semibold text-[#1a1a1a]">
-                      {log.total}
+                    <div
+                      className={`flex items-center justify-center h-7 w-7 rounded-full text-sm font-semibold text-white ${
+                        log.zone === "1" ? "bg-blue-400" : "bg-purple-500"
+                      }`}
+                    >
+                      {log.zone}
                     </div>
                   </div>
-                  <div
-                    className={`flex items-center justify-center h-7 w-7 rounded-full text-sm font-semibold text-white ${
-                      log.zone === "1" ? "bg-blue-400" : "bg-purple-500"
-                    }`}
-                  >
-                    {log.zone}
-                  </div>
-                </div>
 
-                <div className="flex items-center text-xs text-gray-600 border-t border-[#eef2f5] pt-2 mt-2">
-                  <div className="flex items-center mr-4">
-                    <Clock className="h-3.5 w-3.5 mr-1 text-gray-400" />
-                    <span>{log.duration}</span>
+                  <div className="flex items-center text-xs text-gray-600 border-t border-[#eef2f5] pt-2 mt-2">
+                    <div className="flex items-center mr-4">
+                      <Clock className="h-3.5 w-3.5 mr-1 text-gray-400" />
+                      <span>{log.duration}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <MapPin className="h-3.5 w-3.5 mr-1 text-gray-400" />
+                      <span>{log.parking}</span>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-gray-400 ml-auto group-hover:text-[#003087] transition-colors" />
                   </div>
-                  <div className="flex items-center">
-                    <MapPin className="h-3.5 w-3.5 mr-1 text-gray-400" />
-                    <span>{log.parking}</span>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-gray-400 ml-auto group-hover:text-[#003087] transition-colors" />
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))
+            ) : (
+              <div className="bg-white rounded-lg shadow-sm p-6 text-center border border-[#e0e7eb]">
+                <p className="text-gray-500 mb-3">No parking history found.</p>
+                <Link
+                  href="/find-parking"
+                  className="inline-block bg-[#003087] text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-800 transition-colors"
+                >
+                  Find Parking
+                </Link>
+              </div>
+            )}
           </div>
         )}
       </div>
