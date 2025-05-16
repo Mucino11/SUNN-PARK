@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 // GET /api/profile
 export async function GET() {
-  // This is just a placeholder - you would normally fetch this data from your database
+  // Placeholder
   const profileData = {
     name: "John Smith",
     avatar: "/profile-avatar.jpg",

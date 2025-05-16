@@ -22,7 +22,7 @@ export default function PaymentPage() {
   const handleCreditCardSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Credit Card Information:", cardInfo);
-    // Here you would typically process the payment
+    // Here we would typically process the payment
     // For now, we just log it
     alert("Payment and Reservation confirmed");
   };
