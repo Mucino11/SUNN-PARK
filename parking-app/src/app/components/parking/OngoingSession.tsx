@@ -35,7 +35,7 @@ export default function OngoingSession({
           </div>
         </div>
         <Link
-          href="/parking-session/active"
+          href="/zoneDetails"
           className="px-4 py-2 bg-blue-50 rounded-lg text-sm text-blue-600 hover:bg-blue-100 transition-colors"
         >
           View

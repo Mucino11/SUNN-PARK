@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import doctorImage from "../images/doctor-2.jpg";
 import map from "../images/map.png";
 import BottomNavigation from "../components/navigation/BottomNavigation";
@@ -7,15 +8,22 @@ export default function ZoneDetails() {
   return (
     <div className="p-8 max-w-5xl mx-auto">
       <div className="flex justify-between items-center mb-8">
-        <button className="text-3xl">&#8592;</button>
+        <Link
+          href="/"
+          className="text-3xl hover:text-gray-600 transition-colors"
+        >
+          &#8592;
+        </Link>
         <h2 className="font-bold text-2xl">Zone Details</h2>
-        <Image
-          src={doctorImage}
-          alt="Profile"
-          width={75}
-          height={75}
-          className="rounded-full"
-        />
+        <Link href="/">
+          <Image
+            src={doctorImage}
+            alt="Profile"
+            width={75}
+            height={75}
+            className="rounded-full hover:opacity-90 transition-opacity"
+          />
+        </Link>
       </div>
 
       <div className="flex gap-8 mb-8">

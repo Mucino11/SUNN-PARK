@@ -44,7 +44,7 @@ export default function FindParkingPage() {
               key={spot.id}
               position={spot.position}
               label={spot.id.toString()}
-              onClick={() => router.push(`/parking-details/${spot.id}`)}
+              onClick={() => router.push("/zoneDetails")}
             />
           ))}
         </GoogleMap>
@@ -70,7 +70,7 @@ export default function FindParkingPage() {
                     className={`w-6 h-6 text-xs flex items-center justify-center rounded-full text-white font-bold cursor-pointer ${getSpotColor(
                       spot.id
                     )}`}
-                    onClick={() => router.push(`/parking-details/${spot.id}`)}
+                    onClick={() => router.push("/zoneDetails")}
                   >
                     {spot.id}
                   </div>
@@ -82,7 +82,7 @@ export default function FindParkingPage() {
                 Reserve
               </p>
               <button
-                onClick={() => router.push("/reserve")}
+                onClick={() => router.push("/zoneDetails")}
                 className="text-blue-600 text-xl font-bold hover:text-blue-700"
               >
                 +

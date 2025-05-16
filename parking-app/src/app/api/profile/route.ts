@@ -93,11 +93,10 @@ export async function GET() {
 }
 
 // PUT /api/profile
+//Use chat gtp to help with this API
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-
-    // TODO: Update profile in database
 
     return NextResponse.json({
       message: "Profile updated successfully",
