@@ -50,6 +50,18 @@ export default function ProfilePage() {
   const [newCardType, setNewCardType] = useState("");
   const [newCardLast4, setNewCardLast4] = useState("");
   const [newCardExpiry, setNewCardExpiry] = useState("");
+  const [profile, setProfile] = useState({
+    name: "John Smith",
+    avatar: "/img/pexels-linkedin-2182970.jpg",
+    email: "john.smith@example.com",
+    phone: "+47 123 45 678",
+    address: "B R A Veien 6A",
+  });
+  const [editProfile, setEditProfile] = useState(false);
+  const [editName, setEditName] = useState(profile.name);
+  const [editEmail, setEditEmail] = useState(profile.email);
+  const [editPhone, setEditPhone] = useState(profile.phone);
+  const [editAddress, setEditAddress] = useState(profile.address);
 
   useEffect(() => {
     setMounted(true);
@@ -226,7 +238,7 @@ export default function ProfilePage() {
               <Link href="/">
                 <div className="h-16 w-16 rounded-full overflow-hidden mr-4 border-2 border-white flex-shrink-0 hover:opacity-90 transition-opacity">
                   <Image
-                    src={formattedProfileData.avatar}
+                    src={profile.avatar}
                     alt="Profile"
                     width={64}
                     height={64}
@@ -236,26 +248,89 @@ export default function ProfilePage() {
               </Link>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-[#1a1a1a] truncate">
-                    {formattedProfileData.name}
-                  </h3>
-                  <button className="text-[#003087] text-sm font-medium flex items-center gap-1 hover:text-blue-800 transition-colors flex-shrink-0 ml-2">
-                    <Edit2 className="h-3.5 w-3.5" /> Edit
+                  {editProfile ? (
+                    <input
+                      type="text"
+                      className="text-lg font-semibold text-[#1a1a1a] truncate border rounded p-1 w-full mb-1"
+                      value={editName}
+                      onChange={e => setEditName(e.target.value)}
+                    />
+                  ) : (
+                    <h3 className="text-lg font-semibold text-[#1a1a1a] truncate">
+                      {profile.name}
+                    </h3>
+                  )}
+                  <button
+                    className="text-[#003087] text-sm font-medium flex items-center gap-1 hover:text-blue-800 transition-colors flex-shrink-0 ml-2"
+                    onClick={() => {
+                      if (editProfile) {
+                        setEditProfile(false);
+                        setEditName(profile.name);
+                        setEditEmail(profile.email);
+                        setEditPhone(profile.phone);
+                        setEditAddress(profile.address);
+                      } else {
+                        setEditProfile(true);
+                      }
+                    }}
+                  >
+                    <Edit2 className="h-3.5 w-3.5" /> {editProfile ? "Cancel" : "Edit"}
                   </button>
                 </div>
-                <p className="text-sm text-gray-500 truncate">
-                  {formattedProfileData.email}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {formattedProfileData.phone}
-                </p>
+                {editProfile ? (
+                  <input
+                    type="email"
+                    className="text-sm text-gray-500 truncate border rounded p-1 w-full mb-1"
+                    value={editEmail}
+                    onChange={e => setEditEmail(e.target.value)}
+                  />
+                ) : (
+                  <p className="text-sm text-gray-500 truncate">{profile.email}</p>
+                )}
+                {editProfile ? (
+                  <input
+                    type="text"
+                    className="text-sm text-gray-500 border rounded p-1 w-full mb-1"
+                    value={editPhone}
+                    onChange={e => setEditPhone(e.target.value)}
+                  />
+                ) : (
+                  <p className="text-sm text-gray-500">{profile.phone}</p>
+                )}
               </div>
             </div>
-
             <div className="mt-3 flex items-center text-xs text-gray-600 bg-gray-50 p-2 rounded-md">
               <MapPin className="h-3.5 w-3.5 mr-1.5 flex-shrink-0" />
-              <span className="truncate">{formattedProfileData.address}</span>
+              {editProfile ? (
+                <input
+                  type="text"
+                  className="truncate border rounded p-1 w-full"
+                  value={editAddress}
+                  onChange={e => setEditAddress(e.target.value)}
+                />
+              ) : (
+                <span className="truncate">{profile.address}</span>
+              )}
             </div>
+            {editProfile && (
+              <div className="flex justify-end mt-2">
+                <button
+                  className="bg-[#003087] text-white px-4 py-1 rounded hover:bg-blue-800 transition-colors"
+                  onClick={() => {
+                    setProfile({
+                      ...profile,
+                      name: editName,
+                      email: editEmail,
+                      phone: editPhone,
+                      address: editAddress,
+                    });
+                    setEditProfile(false);
+                  }}
+                >
+                  Save
+                </button>
+              </div>
+            )}
 
             {/* Quick Stats */}
             <div className="mt-4 grid grid-cols-2 gap-3">
