@@ -41,6 +41,15 @@ export default function ProfilePage() {
   const [showAddVehicle, setShowAddVehicle] = useState(false);
   const [newCarModel, setNewCarModel] = useState("");
   const [newLicensePlate, setNewLicensePlate] = useState("");
+  const [paymentMethods, setPaymentMethods] = useState([
+    { id: 1, type: "VISA", last4: "4321", expiry: "05/26", default: true },
+    { id: 2, type: "MasterCard", last4: "8765", expiry: "09/25", default: false },
+    { id: 3, type: "Vipps", last4: "2468", expiry: "07/27", default: false },
+  ]);
+  const [showAddCard, setShowAddCard] = useState(false);
+  const [newCardType, setNewCardType] = useState("");
+  const [newCardLast4, setNewCardLast4] = useState("");
+  const [newCardExpiry, setNewCardExpiry] = useState("");
 
   useEffect(() => {
     setMounted(true);
@@ -429,7 +438,7 @@ export default function ProfilePage() {
                 : "opacity-100 translate-y-0"
             } transition-all duration-150`}
           >
-            {formattedProfileData.paymentMethods.map((method) => (
+            {paymentMethods.map((method) => (
               <div
                 key={method.id}
                 className="bg-white rounded-lg shadow-sm p-4 border border-[#e0e7eb]"
@@ -448,18 +457,95 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   </div>
-                  {method.default && (
-                    <span className="px-2 py-1 bg-[#e6f0fa] text-[#003087] text-xs font-medium rounded-full">
-                      Default
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {method.default && (
+                      <span className="px-2 py-1 bg-[#e6f0fa] text-[#003087] text-xs font-medium rounded-full">
+                        Default
+                      </span>
+                    )}
+                    <button
+                      className="ml-2 p-1 rounded-full hover:bg-red-100 transition-colors"
+                      aria-label="Remove card"
+                      onClick={() => setPaymentMethods(paymentMethods.filter(m => m.id !== method.id))}
+                    >
+                      <X className="h-4 w-4 text-red-500" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
-            <button className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-[#003087] hover:text-[#003087] transition-colors">
-              <Plus className="h-5 w-5" />
-              Add Payment Method
-            </button>
+            {showAddCard ? (
+              <form
+                className="bg-white rounded-lg shadow-sm p-4 border border-[#e0e7eb] flex flex-col gap-3"
+                onSubmit={e => {
+                  e.preventDefault();
+                  if (!newCardType.trim() || !newCardLast4.trim() || !newCardExpiry.trim()) return;
+                  setPaymentMethods([
+                    ...paymentMethods,
+                    {
+                      id: Date.now(),
+                      type: newCardType,
+                      last4: newCardLast4,
+                      expiry: newCardExpiry,
+                      default: false,
+                    },
+                  ]);
+                  setShowAddCard(false);
+                  setNewCardType("");
+                  setNewCardLast4("");
+                  setNewCardExpiry("");
+                }}
+              >
+                <input
+                  type="text"
+                  placeholder="Card Type (e.g. VISA)"
+                  className="border rounded p-2"
+                  value={newCardType}
+                  onChange={e => setNewCardType(e.target.value)}
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Last 4 Digits"
+                  className="border rounded p-2"
+                  value={newCardLast4}
+                  onChange={e => setNewCardLast4(e.target.value)}
+                  maxLength={4}
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Expiry (MM/YY)"
+                  className="border rounded p-2"
+                  value={newCardExpiry}
+                  onChange={e => setNewCardExpiry(e.target.value)}
+                  required
+                />
+                <div className="flex gap-2 mt-2">
+                  <button
+                    type="submit"
+                    className="flex-1 bg-[#003087] text-white py-2 rounded hover:bg-blue-800 transition-colors"
+                  >
+                    Add Card
+                  </button>
+                  <button
+                    type="button"
+                    className="flex-1 bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300 transition-colors"
+                    onClick={() => setShowAddCard(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <button
+                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-[#003087] hover:text-[#003087] transition-colors"
+                onClick={() => setShowAddCard(true)}
+              >
+                <Plus className="h-5 w-5" />
+                Add Payment Method
+              </button>
+            )}
           </div>
         )}
 
