@@ -1,12 +1,17 @@
+"use client";
+
 import { createElement as h } from "react";
 import Header from "./components/navigation/Header";
 import SearchBar from "./components/navigation/SearchBar";
 import OngoingSession from "./components/parking/OngoingSession";
 import ZonesGrid from "./components/parking/ZonesGrid";
-import CalendarButton from "./components/calendar/CalendarButton";
 import BottomNavigation from "./components/navigation/BottomNavigation";
 
 export default function HomePage() {
+  const handleCalendarClick = () => {
+    alert("Booking from the homepage coming soon!");
+  };
+
   return h(
     "div",
     {
@@ -88,7 +93,16 @@ export default function HomePage() {
                     },
                     "Calendar"
                   ),
-                  h(CalendarButton, { key: "calendar-button" }),
+                  h(
+                    "button",
+                    {
+                      key: "calendar-button",
+                      onClick: handleCalendarClick,
+                      className:
+                        "w-full p-4 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition-colors text-left",
+                    },
+                    "View Calendar"
+                  ),
                 ]
               ),
             ]
