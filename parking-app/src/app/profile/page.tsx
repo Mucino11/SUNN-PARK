@@ -19,6 +19,27 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("history");
   const [mounted, setMounted] = useState(false);
   const [tabTransition, setTabTransition] = useState(false);
+  const [vehicles, setVehicles] = useState([
+    {
+      id: 1,
+      plate: "AB 12345",
+      make: "Tesla",
+      model: "Model 3",
+      color: "White",
+      default: true,
+    },
+    {
+      id: 2,
+      plate: "CD 67890",
+      make: "Volvo",
+      model: "XC60",
+      color: "Black",
+      default: false,
+    },
+  ]);
+  const [showAddVehicle, setShowAddVehicle] = useState(false);
+  const [newCarModel, setNewCarModel] = useState("");
+  const [newLicensePlate, setNewLicensePlate] = useState("");
 
   useEffect(() => {
     setMounted(true);
@@ -296,7 +317,7 @@ export default function ProfilePage() {
                 : "opacity-100 translate-y-0"
             } transition-all duration-150`}
           >
-            {formattedProfileData.vehicles.map((vehicle) => (
+            {vehicles.map((vehicle) => (
               <div
                 key={vehicle.id}
                 className="bg-white rounded-lg shadow-sm p-4 border border-[#e0e7eb]"
@@ -308,7 +329,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="min-w-0">
                       <div className="text-sm font-medium text-[#1a1a1a] truncate">
-                        {vehicle.make} {vehicle.model}
+                        {vehicle.make ? vehicle.make + " " : ""}{vehicle.model}
                       </div>
                       <div className="text-xs text-gray-500">
                         {vehicle.plate}
@@ -323,10 +344,69 @@ export default function ProfilePage() {
                 </div>
               </div>
             ))}
-            <button className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-[#003087] hover:text-[#003087] transition-colors">
-              <Plus className="h-5 w-5" />
-              Add Vehicle
-            </button>
+            {showAddVehicle ? (
+              <form
+                className="bg-white rounded-lg shadow-sm p-4 border border-[#e0e7eb] flex flex-col gap-3"
+                onSubmit={e => {
+                  e.preventDefault();
+                  if (!newCarModel.trim() || !newLicensePlate.trim()) return;
+                  setVehicles([
+                    ...vehicles,
+                    {
+                      id: Date.now(),
+                      make: '',
+                      model: newCarModel,
+                      plate: newLicensePlate,
+                      color: '',
+                      default: false,
+                    },
+                  ]);
+                  setShowAddVehicle(false);
+                  setNewCarModel("");
+                  setNewLicensePlate("");
+                }}
+              >
+                <input
+                  type="text"
+                  placeholder="Car Model"
+                  className="border rounded p-2"
+                  value={newCarModel}
+                  onChange={e => setNewCarModel(e.target.value)}
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="License Plate"
+                  className="border rounded p-2"
+                  value={newLicensePlate}
+                  onChange={e => setNewLicensePlate(e.target.value)}
+                  required
+                />
+                <div className="flex gap-2 mt-2">
+                  <button
+                    type="submit"
+                    className="flex-1 bg-[#003087] text-white py-2 rounded hover:bg-blue-800 transition-colors"
+                  >
+                    Add Vehicle
+                  </button>
+                  <button
+                    type="button"
+                    className="flex-1 bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300 transition-colors"
+                    onClick={() => setShowAddVehicle(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <button
+                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-[#003087] hover:text-[#003087] transition-colors"
+                onClick={() => setShowAddVehicle(true)}
+              >
+                <Plus className="h-5 w-5" />
+                Add Vehicle
+              </button>
+            )}
           </div>
         )}
 
