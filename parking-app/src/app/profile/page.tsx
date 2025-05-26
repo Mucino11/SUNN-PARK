@@ -16,36 +16,79 @@ import {
 } from "lucide-react";
 import BottomNavigation from "../components/navigation/BottomNavigation";
 
+interface Booking {
+  date: string;
+  startTime: string;
+  endTime: string;
+  id: number;
+  zone: number;
+}
+
+interface Vehicle {
+  id: number;
+  plate: string;
+  make: string;
+  model: string;
+  color: string;
+  default: boolean;
+}
+
+interface PaymentMethod {
+  id: number;
+  type: string;
+  last4: string;
+  expiry: string;
+  default: boolean;
+}
+
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("history");
   const [mounted, setMounted] = useState(false);
   const [tabTransition, setTabTransition] = useState(false);
-  const [vehicles, setVehicles] = useState([
-    {
-      id: 1,
-      plate: "AB 12345",
-      make: "Tesla",
-      model: "Model 3",
-      color: "White",
-      default: true,
-    },
-    {
-      id: 2,
-      plate: "CD 67890",
-      make: "Volvo",
-      model: "XC60",
-      color: "Black",
-      default: false,
-    },
-  ]);
+  const [vehicles, setVehicles] = useState<Vehicle[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("profileVehicles");
+      if (saved) return JSON.parse(saved);
+    }
+    return [
+      {
+        id: 1,
+        plate: "AB 12345",
+        make: "Tesla",
+        model: "Model 3",
+        color: "White",
+        default: true,
+      },
+      {
+        id: 2,
+        plate: "CD 67890",
+        make: "Volvo",
+        model: "XC60",
+        color: "Black",
+        default: false,
+      },
+    ];
+  });
   const [showAddVehicle, setShowAddVehicle] = useState(false);
   const [newCarModel, setNewCarModel] = useState("");
   const [newLicensePlate, setNewLicensePlate] = useState("");
-  const [paymentMethods, setPaymentMethods] = useState([
-    { id: 1, type: "VISA", last4: "4321", expiry: "05/26", default: true },
-    { id: 2, type: "MasterCard", last4: "8765", expiry: "09/25", default: false },
-    { id: 3, type: "Vipps", last4: "2468", expiry: "07/27", default: false },
-  ]);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("profilePaymentMethods");
+      if (saved) return JSON.parse(saved);
+    }
+    return [
+      { id: 1, type: "VISA", last4: "4321", expiry: "05/26", default: true },
+      {
+        id: 2,
+        type: "MasterCard",
+        last4: "8765",
+        expiry: "09/25",
+        default: false,
+      },
+      { id: 3, type: "Vipps", last4: "2468", expiry: "07/27", default: false },
+    ];
+  });
   const [showAddCard, setShowAddCard] = useState(false);
   const [newCardType, setNewCardType] = useState("");
   const [newCardLast4, setNewCardLast4] = useState("");
@@ -62,9 +105,16 @@ export default function ProfilePage() {
   const [editEmail, setEditEmail] = useState(profile.email);
   const [editPhone, setEditPhone] = useState(profile.phone);
   const [editAddress, setEditAddress] = useState(profile.address);
+  const [bookings, setBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
     setMounted(true);
+
+    // Load bookings from localStorage
+    const savedBookings = localStorage.getItem("parkingBookings");
+    if (savedBookings) {
+      setBookings(JSON.parse(savedBookings));
+    }
   }, []);
 
   // Effect for CSS animations
@@ -97,6 +147,22 @@ export default function ProfilePage() {
     }
   }, []);
 
+  // Persist vehicles and payment methods to localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("profileVehicles", JSON.stringify(vehicles));
+    }
+  }, [vehicles]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "profilePaymentMethods",
+        JSON.stringify(paymentMethods)
+      );
+    }
+  }, [paymentMethods]);
+
   const handleTabChange = (tab: "history" | "vehicles" | "payment") => {
     if (tab !== activeTab) {
       setTabTransition(true);
@@ -109,7 +175,36 @@ export default function ProfilePage() {
     }
   };
 
-  // Mock data for the profile
+  // Format booking data for display
+  const formatBookingForHistory = (booking: Booking) => {
+    const bookingDate = new Date(booking.date);
+    const formattedDate = bookingDate.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+
+    // Calculate duration (simplified - you might want to make this more accurate)
+    const startHour = parseInt(booking.startTime.split(":")[0]);
+    const endHour = parseInt(booking.endTime.split(":")[0]);
+    const duration = endHour - startHour;
+
+    return {
+      id: booking.id,
+      date: booking.date,
+      formattedDate,
+      duration: `${duration}h 00m`,
+      startTime: booking.startTime,
+      endTime: booking.endTime,
+      parking: `Spot-${booking.id}`,
+      total: `${duration * 25} kr`, // 25 kr per hour
+      zone: `Zone ${booking.zone}`,
+      location: "1453 Bjornemyr",
+      status: new Date(booking.date) < new Date() ? "Completed" : "Active",
+    };
+  };
+
+  // Mock data for the profile (keeping non-history data)
   const formattedProfileData = {
     name: "John Smith",
     avatar: "/img/pexels-linkedin-2182970.jpg",
@@ -148,40 +243,40 @@ export default function ProfilePage() {
       { id: 3, type: "Vipps", last4: "2468", expiry: "07/27", default: false },
     ],
     stats: {
-      totalSpent: "4,250 kr",
-      totalHours: "67 hours",
-      mostVisitedZone: "Zone 5",
-      averageStay: "2.4 hours",
+      totalSpent: `${bookings.reduce((total, booking) => {
+        const startHour = parseInt(booking.startTime.split(":")[0]);
+        const endHour = parseInt(booking.endTime.split(":")[0]);
+        const duration = endHour - startHour;
+        return total + duration * 25;
+      }, 0)} kr`,
+      totalHours: `${bookings.reduce((total, booking) => {
+        const startHour = parseInt(booking.startTime.split(":")[0]);
+        const endHour = parseInt(booking.endTime.split(":")[0]);
+        return total + (endHour - startHour);
+      }, 0)} hours`,
+      mostVisitedZone:
+        bookings.length > 0
+          ? `Zone ${bookings[bookings.length - 1].zone}`
+          : "Zone 5",
+      averageStay:
+        bookings.length > 0
+          ? `${
+              Math.round(
+                (bookings.reduce((total, booking) => {
+                  const startHour = parseInt(booking.startTime.split(":")[0]);
+                  const endHour = parseInt(booking.endTime.split(":")[0]);
+                  return total + (endHour - startHour);
+                }, 0) /
+                  bookings.length) *
+                  10
+              ) / 10
+            } hours`
+          : "0 hours",
     },
-    logs: [
-      {
-        id: 1,
-        date: "2024-03-15",
-        formattedDate: "15.03.2024",
-        duration: "2h 30m",
-        startTime: "09:00",
-        endTime: "11:30",
-        parking: "A-123",
-        total: "150 kr",
-        zone: "Zone 5",
-        location: "City Center",
-        status: "Completed",
-      },
-      {
-        id: 2,
-        date: "2024-03-14",
-        formattedDate: "14.03.2024",
-        duration: "1h 45m",
-        startTime: "14:00",
-        endTime: "15:45",
-        parking: "B-456",
-        total: "120 kr",
-        zone: "Zone 1",
-        location: "Shopping Mall",
-        status: "Completed",
-      },
-    ],
   };
+
+  // Convert bookings to history format
+  const historyLogs = bookings.map(formatBookingForHistory).reverse(); // Show newest first
 
   return (
     <div
@@ -206,6 +301,10 @@ export default function ProfilePage() {
           <Link
             href="#"
             className="relative p-2 hover:bg-[#eef2f5] rounded-full transition-colors"
+            onClick={(e) => {
+              e.preventDefault();
+              alert("Coming soon!");
+            }}
           >
             <Bell className="h-5 w-5 text-[#343a40]" />
             <span className="absolute top-1.5 right-1.5 block h-2 w-2 rounded-full bg-[#003087]"></span>
@@ -213,6 +312,10 @@ export default function ProfilePage() {
           <Link
             href="#"
             className="p-2 hover:bg-[#eef2f5] rounded-full transition-colors"
+            onClick={(e) => {
+              e.preventDefault();
+              alert("Coming soon!");
+            }}
           >
             <Settings className="h-5 w-5 text-[#343a40]" />
           </Link>
@@ -253,7 +356,7 @@ export default function ProfilePage() {
                       type="text"
                       className="text-lg font-semibold text-[#1a1a1a] truncate border rounded p-1 w-full mb-1"
                       value={editName}
-                      onChange={e => setEditName(e.target.value)}
+                      onChange={(e) => setEditName(e.target.value)}
                     />
                   ) : (
                     <h3 className="text-lg font-semibold text-[#1a1a1a] truncate">
@@ -274,7 +377,8 @@ export default function ProfilePage() {
                       }
                     }}
                   >
-                    <Edit2 className="h-3.5 w-3.5" /> {editProfile ? "Cancel" : "Edit"}
+                    <Edit2 className="h-3.5 w-3.5" />{" "}
+                    {editProfile ? "Cancel" : "Edit"}
                   </button>
                 </div>
                 {editProfile ? (
@@ -282,17 +386,19 @@ export default function ProfilePage() {
                     type="email"
                     className="text-sm text-gray-500 truncate border rounded p-1 w-full mb-1"
                     value={editEmail}
-                    onChange={e => setEditEmail(e.target.value)}
+                    onChange={(e) => setEditEmail(e.target.value)}
                   />
                 ) : (
-                  <p className="text-sm text-gray-500 truncate">{profile.email}</p>
+                  <p className="text-sm text-gray-500 truncate">
+                    {profile.email}
+                  </p>
                 )}
                 {editProfile ? (
                   <input
                     type="text"
                     className="text-sm text-gray-500 border rounded p-1 w-full mb-1"
                     value={editPhone}
-                    onChange={e => setEditPhone(e.target.value)}
+                    onChange={(e) => setEditPhone(e.target.value)}
                   />
                 ) : (
                   <p className="text-sm text-gray-500">{profile.phone}</p>
@@ -306,7 +412,7 @@ export default function ProfilePage() {
                   type="text"
                   className="truncate border rounded p-1 w-full"
                   value={editAddress}
-                  onChange={e => setEditAddress(e.target.value)}
+                  onChange={(e) => setEditAddress(e.target.value)}
                 />
               ) : (
                 <span className="truncate">{profile.address}</span>
@@ -402,7 +508,7 @@ export default function ProfilePage() {
                 : "opacity-100 translate-y-0"
             } transition-all duration-150`}
           >
-            {vehicles.map((vehicle) => (
+            {vehicles.map((vehicle: Vehicle) => (
               <div
                 key={vehicle.id}
                 className="bg-white rounded-lg shadow-sm p-4 border border-[#e0e7eb]"
@@ -414,7 +520,8 @@ export default function ProfilePage() {
                     </div>
                     <div className="min-w-0">
                       <div className="text-sm font-medium text-[#1a1a1a] truncate">
-                        {vehicle.make ? vehicle.make + " " : ""}{vehicle.model}
+                        {vehicle.make ? vehicle.make + " " : ""}
+                        {vehicle.model}
                       </div>
                       <div className="text-xs text-gray-500">
                         {vehicle.plate}
@@ -430,7 +537,11 @@ export default function ProfilePage() {
                     <button
                       className="ml-2 p-1 rounded-full hover:bg-red-100 transition-colors"
                       aria-label="Remove vehicle"
-                      onClick={() => setVehicles(vehicles.filter(v => v.id !== vehicle.id))}
+                      onClick={() =>
+                        setVehicles(
+                          vehicles.filter((v: Vehicle) => v.id !== vehicle.id)
+                        )
+                      }
                     >
                       <X className="h-4 w-4 text-red-500" />
                     </button>
@@ -441,17 +552,17 @@ export default function ProfilePage() {
             {showAddVehicle ? (
               <form
                 className="bg-white rounded-lg shadow-sm p-4 border border-[#e0e7eb] flex flex-col gap-3"
-                onSubmit={e => {
+                onSubmit={(e) => {
                   e.preventDefault();
                   if (!newCarModel.trim() || !newLicensePlate.trim()) return;
                   setVehicles([
                     ...vehicles,
                     {
                       id: Date.now(),
-                      make: '',
+                      make: "",
                       model: newCarModel,
                       plate: newLicensePlate,
-                      color: '',
+                      color: "",
                       default: false,
                     },
                   ]);
@@ -465,7 +576,7 @@ export default function ProfilePage() {
                   placeholder="Car Model"
                   className="border rounded p-2"
                   value={newCarModel}
-                  onChange={e => setNewCarModel(e.target.value)}
+                  onChange={(e) => setNewCarModel(e.target.value)}
                   required
                 />
                 <input
@@ -473,7 +584,7 @@ export default function ProfilePage() {
                   placeholder="License Plate"
                   className="border rounded p-2"
                   value={newLicensePlate}
-                  onChange={e => setNewLicensePlate(e.target.value)}
+                  onChange={(e) => setNewLicensePlate(e.target.value)}
                   required
                 />
                 <div className="flex gap-2 mt-2">
@@ -513,7 +624,7 @@ export default function ProfilePage() {
                 : "opacity-100 translate-y-0"
             } transition-all duration-150`}
           >
-            {paymentMethods.map((method) => (
+            {paymentMethods.map((method: PaymentMethod) => (
               <div
                 key={method.id}
                 className="bg-white rounded-lg shadow-sm p-4 border border-[#e0e7eb]"
@@ -541,7 +652,13 @@ export default function ProfilePage() {
                     <button
                       className="ml-2 p-1 rounded-full hover:bg-red-100 transition-colors"
                       aria-label="Remove card"
-                      onClick={() => setPaymentMethods(paymentMethods.filter(m => m.id !== method.id))}
+                      onClick={() =>
+                        setPaymentMethods(
+                          paymentMethods.filter(
+                            (m: PaymentMethod) => m.id !== method.id
+                          )
+                        )
+                      }
                     >
                       <X className="h-4 w-4 text-red-500" />
                     </button>
@@ -552,9 +669,14 @@ export default function ProfilePage() {
             {showAddCard ? (
               <form
                 className="bg-white rounded-lg shadow-sm p-4 border border-[#e0e7eb] flex flex-col gap-3"
-                onSubmit={e => {
+                onSubmit={(e) => {
                   e.preventDefault();
-                  if (!newCardType.trim() || !newCardLast4.trim() || !newCardExpiry.trim()) return;
+                  if (
+                    !newCardType.trim() ||
+                    !newCardLast4.trim() ||
+                    !newCardExpiry.trim()
+                  )
+                    return;
                   setPaymentMethods([
                     ...paymentMethods,
                     {
@@ -576,7 +698,7 @@ export default function ProfilePage() {
                   placeholder="Card Type (e.g. VISA)"
                   className="border rounded p-2"
                   value={newCardType}
-                  onChange={e => setNewCardType(e.target.value)}
+                  onChange={(e) => setNewCardType(e.target.value)}
                   required
                 />
                 <input
@@ -584,7 +706,7 @@ export default function ProfilePage() {
                   placeholder="Last 4 Digits"
                   className="border rounded p-2"
                   value={newCardLast4}
-                  onChange={e => setNewCardLast4(e.target.value)}
+                  onChange={(e) => setNewCardLast4(e.target.value)}
                   maxLength={4}
                   required
                 />
@@ -593,7 +715,7 @@ export default function ProfilePage() {
                   placeholder="Expiry (MM/YY)"
                   className="border rounded p-2"
                   value={newCardExpiry}
-                  onChange={e => setNewCardExpiry(e.target.value)}
+                  onChange={(e) => setNewCardExpiry(e.target.value)}
                   required
                 />
                 <div className="flex gap-2 mt-2">
@@ -633,42 +755,58 @@ export default function ProfilePage() {
                 : "opacity-100 translate-y-0"
             } transition-all duration-150`}
           >
-            {formattedProfileData.logs.map((log) => (
-              <div
-                key={log.id}
-                className="bg-white rounded-lg shadow-sm p-4 border border-[#e0e7eb]"
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <div className="text-sm font-medium text-[#1a1a1a]">
-                      {log.zone}
+            {historyLogs.length > 0 ? (
+              historyLogs.map((log) => (
+                <div
+                  key={log.id}
+                  className="bg-white rounded-lg shadow-sm p-4 border border-[#e0e7eb]"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <div className="text-sm font-medium text-[#1a1a1a]">
+                        {log.zone}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {log.location}
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-500">{log.location}</div>
+                    <span
+                      className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        log.status === "Completed"
+                          ? "bg-green-50 text-green-700"
+                          : log.status === "Active"
+                          ? "bg-blue-50 text-blue-700"
+                          : "bg-red-50 text-red-700"
+                      }`}
+                    >
+                      {log.status}
+                    </span>
                   </div>
-                  <span
-                    className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      log.status === "Completed"
-                        ? "bg-green-50 text-green-700"
-                        : log.status === "Active"
-                        ? "bg-blue-50 text-blue-700"
-                        : "bg-red-50 text-red-700"
-                    }`}
-                  >
-                    {log.status}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center text-gray-600">
-                    <Clock className="h-4 w-4 mr-1" />
-                    {log.duration}
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center text-gray-600">
+                      <Clock className="h-4 w-4 mr-1" />
+                      {log.duration}
+                    </div>
+                    <div className="text-[#1a1a1a] font-medium">
+                      {log.total}
+                    </div>
                   </div>
-                  <div className="text-[#1a1a1a] font-medium">{log.total}</div>
+                  <div className="mt-2 text-xs text-gray-500">
+                    {log.formattedDate} • {log.startTime} - {log.endTime}
+                  </div>
                 </div>
-                <div className="mt-2 text-xs text-gray-500">
-                  {log.formattedDate} • {log.startTime} - {log.endTime}
+              ))
+            ) : (
+              <div className="bg-white rounded-lg shadow-sm p-8 border border-[#e0e7eb] text-center">
+                <Clock className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                <div className="text-sm font-medium text-gray-900 mb-1">
+                  No parking history
+                </div>
+                <div className="text-xs text-gray-500">
+                  Your parking sessions will appear here
                 </div>
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>
