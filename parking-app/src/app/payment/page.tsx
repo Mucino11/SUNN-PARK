@@ -1,9 +1,17 @@
 "use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import BottomNavigation from "../components/navigation/BottomNavigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import BottomNavigation from "../components/navigation/BottomNavigation";
+
+interface Booking {
+  date: string;
+  startTime: string;
+  endTime: string;
+  id: number;
+}
 
 export default function PaymentPage() {
   const router = useRouter();
@@ -14,17 +22,35 @@ export default function PaymentPage() {
     cvv: "",
     cardholderName: "",
   });
+  const [bookingDetails, setBookingDetails] = useState<Booking | null>(null);
+
+  useEffect(() => {
+    const savedBookings = localStorage.getItem("parkingBookings");
+    if (savedBookings) {
+      const bookings = JSON.parse(savedBookings);
+      // Get the most recent booking
+      const latestBooking = bookings[bookings.length - 1];
+      setBookingDetails(latestBooking);
+    }
+  }, []);
 
   const handleBackClick = () => {
-    router.push("/");
+    router.push("/zoneDetails");
   };
 
   const handleCreditCardSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Credit Card Information:", cardInfo);
     // Here we would typically process the payment
-    // For now, we just log it
     alert("Payment and Reservation confirmed");
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
   };
 
   return (
@@ -52,12 +78,14 @@ export default function PaymentPage() {
 
       <div className="flex gap-8 mb-8">
         <div className="flex-1 bg-gray-100 p-6 rounded-xl shadow">
-          {/* Reservation details remain the same */}
           <div className="flex justify-center mb-4">
             <div className="bg-purple-600 text-white w-14 h-14 rounded-full flex items-center justify-center text-xl">
               5
             </div>
           </div>
+          <p className="text-gray-800">
+            <strong className="text-gray-900">Name:</strong> John Smith
+          </p>
           <p className="text-gray-800">
             <strong className="text-gray-900">Zone:</strong> 5
           </p>
@@ -67,15 +95,18 @@ export default function PaymentPage() {
           <p className="text-gray-800">
             <strong className="text-gray-900">Parking spot:</strong> Spot 10
           </p>
-          <p className="text-gray-800">
-            <strong className="text-gray-900">Date:</strong> 11/04/2025
-          </p>
-          <p className="text-gray-800">
-            <strong className="text-gray-900">Duration:</strong> 3 hours
-          </p>
-          <p className="text-gray-800">
-            <strong className="text-gray-900">Hours:</strong> 9am to 12pm
-          </p>
+          {bookingDetails && (
+            <>
+              <p className="text-gray-800">
+                <strong className="text-gray-900">Date:</strong>{" "}
+                {formatDate(bookingDetails.date)}
+              </p>
+              <p className="text-gray-800">
+                <strong className="text-gray-900">Time:</strong>{" "}
+                {bookingDetails.startTime} - {bookingDetails.endTime}
+              </p>
+            </>
+          )}
         </div>
 
         <div className="flex-1">
@@ -90,10 +121,16 @@ export default function PaymentPage() {
             >
               💳 Credit Card
             </button>
-            <button className="w-full p-4 rounded-xl bg-orange-200 text-gray-900 text-left text-lg hover:bg-orange-300 transition-colors">
+            <button
+              onClick={() => alert("Vipps payment coming soon!")}
+              className="w-full p-4 rounded-xl bg-orange-200 text-gray-900 text-left text-lg hover:bg-orange-300 transition-colors"
+            >
               📱 Betal med Vipps
             </button>
-            <button className="w-full p-4 rounded-xl bg-gray-200 text-gray-900 text-left text-lg hover:bg-gray-300 transition-colors">
+            <button
+              onClick={() => alert("PayPal payment coming soon!")}
+              className="w-full p-4 rounded-xl bg-gray-200 text-gray-900 text-left text-lg hover:bg-gray-300 transition-colors"
+            >
               🅿️ PayPal
             </button>
           </div>
@@ -166,7 +203,7 @@ export default function PaymentPage() {
 
           <div className="flex justify-between mb-4 text-lg">
             <span className="text-gray-800">Total</span>
-            <span className="text-green-600 font-bold">100.50kr / 3 hrs</span>
+            <span className="text-green-600 font-bold">25 NOK / day</span>
           </div>
 
           <button

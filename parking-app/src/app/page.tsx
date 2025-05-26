@@ -42,15 +42,9 @@ export default function HomePage() {
                   key: "ongoing-title",
                   className: "text-xl font-semibold mb-3 text-gray-900",
                 },
-                "Ongoing session"
+                "Session"
               ),
-              h(OngoingSession, {
-                key: "session",
-                zone: "Zone 5",
-                startTime: "12:30",
-                endTime: "13:30",
-                image: "/images/car-placeholder.svg",
-              }),
+              h(OngoingSession, { key: "session" }),
             ]
           ),
 

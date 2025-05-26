@@ -26,7 +26,7 @@ export default function ZonesGrid() {
       {zones.map((zone) => (
         <Link
           key={zone}
-          href="/zoneDetails"
+          href={`/zoneDetails?zone=${zone}`}
           className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold ${getZoneColor(
             zone
           )}`}
