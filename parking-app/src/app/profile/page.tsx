@@ -12,6 +12,7 @@ import {
   MapPin,
   Edit2,
   Plus,
+  X,
 } from "lucide-react";
 import BottomNavigation from "../components/navigation/BottomNavigation";
 
@@ -336,11 +337,20 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   </div>
-                  {vehicle.default && (
-                    <span className="px-2 py-1 bg-[#e6f0fa] text-[#003087] text-xs font-medium rounded-full">
-                      Default
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {vehicle.default && (
+                      <span className="px-2 py-1 bg-[#e6f0fa] text-[#003087] text-xs font-medium rounded-full">
+                        Default
+                      </span>
+                    )}
+                    <button
+                      className="ml-2 p-1 rounded-full hover:bg-red-100 transition-colors"
+                      aria-label="Remove vehicle"
+                      onClick={() => setVehicles(vehicles.filter(v => v.id !== vehicle.id))}
+                    >
+                      <X className="h-4 w-4 text-red-500" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
