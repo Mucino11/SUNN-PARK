@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 import BottomNavigation from "@/app/components/navigation/BottomNavigation";
@@ -24,6 +24,7 @@ const parkingSpots = [
 
 export default function FindParkingPage() {
   const router = useRouter();
+  const [search, setSearch] = useState("");
 
   return (
     <div className="w-full min-h-screen bg-white flex justify-center">
@@ -44,17 +45,38 @@ export default function FindParkingPage() {
               key={spot.id}
               position={spot.position}
               label={spot.id.toString()}
-              onClick={() => router.push("/zoneDetails")}
+              onClick={() => router.push(`/zoneDetails?zone=${spot.id}`)}
             />
           ))}
         </GoogleMap>
 
         <div className="absolute top-2 left-4 right-4 z-10">
-          <input
-            type="text"
-            placeholder="Search for parking spots..."
-            className="w-full px-4 py-3 rounded-xl shadow bg-white text-gray-800 placeholder-gray-500 text-sm focus:outline-none"
-          />
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const zone = parseInt(search);
+              if (zone >= 1 && zone <= 5) {
+                router.push(`/zoneDetails?zone=${zone}`);
+              }
+            }}
+            className="flex gap-2"
+          >
+            <input
+              type="number"
+              min="1"
+              max="5"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search for parking spots..."
+              className="w-full px-4 py-3 rounded-xl shadow bg-white text-gray-800 placeholder-gray-500 text-sm focus:outline-none"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-xl bg-blue-500 text-white font-semibold hover:bg-blue-600 transition-colors"
+            >
+              Go
+            </button>
+          </form>
         </div>
 
         <div className="absolute bottom-20 left-4 right-4 z-10 bg-white rounded-2xl p-4 shadow-md">
@@ -70,7 +92,7 @@ export default function FindParkingPage() {
                     className={`w-6 h-6 text-xs flex items-center justify-center rounded-full text-white font-bold cursor-pointer ${getSpotColor(
                       spot.id
                     )}`}
-                    onClick={() => router.push("/zoneDetails")}
+                    onClick={() => router.push(`/zoneDetails?zone=${spot.id}`)}
                   >
                     {spot.id}
                   </div>
