@@ -19,17 +19,31 @@ interface Booking {
 const getZoneColor = (zone: number) => {
   switch (zone) {
     case 1:
-      return "bg-gradient-to-br from-blue-400 to-blue-600";
+      return "bg-[#c4dbf3]"; // Light blue
     case 2:
-      return "bg-gradient-to-br from-pink-400 to-pink-600";
+      return "bg-[#eddee5]"; // Light pink
     case 3:
-      return "bg-gradient-to-br from-indigo-500 to-indigo-700";
+      return "bg-[#003087]"; // Dark blue
     case 4:
-      return "bg-gradient-to-br from-green-400 to-green-600";
+      return "bg-[#c2d6cc]"; // Light green
     case 5:
-      return "bg-gradient-to-br from-purple-500 to-purple-700";
+      return "bg-[#6B46C1]"; // Dark purple
     default:
-      return "bg-gradient-to-br from-gray-400 to-gray-600";
+      return "bg-[#1a1a1a]"; // Dark gray
+  }
+};
+
+const getZoneTextColor = (zone: number) => {
+  switch (zone) {
+    case 3:
+    case 5:
+      return "text-white"; // White text on dark colors
+    case 1:
+    case 2:
+    case 4:
+      return "text-[#1a1a1a]"; // Dark text on light backgrounds
+    default:
+      return "text-white"; // White text on dark gray
   }
 };
 
@@ -290,7 +304,7 @@ export default function ZoneDetails() {
                     onClick={() => handleZoneChange(zone)}
                     className={`relative h-12 sm:h-14 rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95 font-bold text-lg sm:text-xl ${
                       zone === zoneNumber
-                        ? `${getZoneColor(zone)} text-white shadow-lg ring-2 ring-blue-300`
+                        ? `${getZoneColor(zone)} ${getZoneTextColor(zone)} shadow-lg ring-2 ring-blue-300`
                         : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-300"
                     }`}
                   >

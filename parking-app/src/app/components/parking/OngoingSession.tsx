@@ -14,17 +14,31 @@ interface Booking {
 const getZoneColor = (zone: number) => {
   switch (zone) {
     case 1:
-      return "bg-gradient-to-br from-blue-400 to-blue-600";
+      return "bg-[#c4dbf3]"; // Light blue
     case 2:
-      return "bg-gradient-to-br from-pink-400 to-pink-600";
+      return "bg-[#eddee5]"; // Light pink
     case 3:
-      return "bg-gradient-to-br from-indigo-500 to-indigo-700";
+      return "bg-[#003087]"; // Dark blue
     case 4:
-      return "bg-gradient-to-br from-green-400 to-green-600";
+      return "bg-[#c2d6cc]"; // Light green
     case 5:
-      return "bg-gradient-to-br from-purple-500 to-purple-700";
+      return "bg-[#6B46C1]"; // Dark purple
     default:
-      return "bg-gradient-to-br from-gray-400 to-gray-600";
+      return "bg-[#1a1a1a]"; // Dark gray
+  }
+};
+
+const getZoneTextColor = (zone: number) => {
+  switch (zone) {
+    case 3:
+    case 5:
+      return "text-white"; // White text on dark colors
+    case 1:
+    case 2:
+    case 4:
+      return "text-[#1a1a1a]"; // Dark text on light backgrounds
+    default:
+      return "text-white"; // White text on dark gray
   }
 };
 
@@ -255,7 +269,7 @@ export default function OngoingSession() {
             <div className="p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3 sm:gap-4 flex-1">
-                  <div className={`w-12 h-12 sm:w-16 sm:h-16 ${getZoneColor(booking.zone)} rounded-xl flex items-center justify-center text-white shadow-lg flex-shrink-0`}>
+                  <div className={`w-12 h-12 sm:w-16 sm:h-16 ${getZoneColor(booking.zone)} ${getZoneTextColor(booking.zone)} rounded-xl flex items-center justify-center shadow-lg flex-shrink-0`}>
                     <div className="text-center">
                       <div className="text-sm sm:text-lg font-bold">{booking.zone}</div>
                       <div className="text-xs opacity-90">Zone</div>

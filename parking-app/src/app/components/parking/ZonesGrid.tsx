@@ -6,17 +6,31 @@ const zones = [1, 2, 3, 4, 5];
 const getZoneColor = (zone: number) => {
   switch (zone) {
     case 1:
-      return "bg-gradient-to-br from-blue-400 to-blue-600";
+      return "bg-[#c4dbf3]"; // Light blue
     case 2:
-      return "bg-gradient-to-br from-pink-400 to-pink-600";
+      return "bg-[#eddee5]"; // Light pink
     case 3:
-      return "bg-gradient-to-br from-indigo-500 to-indigo-700";
+      return "bg-[#003087]"; // Dark blue
     case 4:
-      return "bg-gradient-to-br from-green-400 to-green-600";
+      return "bg-[#c2d6cc]"; // Light green
     case 5:
-      return "bg-gradient-to-br from-purple-500 to-purple-700";
+      return "bg-[#6B46C1]"; // Dark purple
     default:
-      return "bg-gradient-to-br from-gray-400 to-gray-600";
+      return "bg-[#1a1a1a]"; // Dark gray
+  }
+};
+
+const getZoneTextColor = (zone: number) => {
+  switch (zone) {
+    case 3:
+    case 5:
+      return "text-white"; // White text on dark colors
+    case 1:
+    case 2:
+    case 4:
+      return "text-[#1a1a1a]"; // Dark text on light backgrounds
+    default:
+      return "text-white"; // White text on dark gray
   }
 };
 
@@ -49,7 +63,7 @@ export default function ZonesGrid() {
             className="block group"
           >
             <div className="text-center">
-              <div className={`${getZoneColor(zone)} w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full flex items-center justify-center text-white shadow-lg hover:shadow-xl transform hover:scale-110 active:scale-95 transition-all duration-300 mx-auto mb-3 relative overflow-hidden`}>
+              <div className={`${getZoneColor(zone)} w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full flex items-center justify-center ${getZoneTextColor(zone)} shadow-lg hover:shadow-xl transform hover:scale-110 active:scale-95 transition-all duration-300 mx-auto mb-3 relative overflow-hidden`}>
                 {/* Animated ring on hover */}
                 <div className="absolute inset-0 rounded-full border-2 border-white opacity-0 group-hover:opacity-30 animate-pulse"></div>
                 
