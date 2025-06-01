@@ -10,6 +10,7 @@ import BottomNavigation from "./components/navigation/BottomNavigation";
 import doctorImage from "./images/doctor-2.jpg";
 
 export default function HomePage() {
+  const [showSplash, setShowSplash] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -36,6 +37,115 @@ export default function HomePage() {
     };
   }, []);
 
+  // Check if user has seen splash before
+  useEffect(() => {
+    const hasSeenSplash = localStorage.getItem('hasSeenSplash');
+    if (hasSeenSplash) {
+      setShowSplash(false);
+    }
+  }, []);
+
+  const handleGetStarted = () => {
+    localStorage.setItem('hasSeenSplash', 'true');
+    setShowSplash(false);
+  };
+
+  // Splash Screen Component
+  if (showSplash) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 flex flex-col items-center justify-center px-4 relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse delay-500"></div>
+        </div>
+
+        {/* Main content */}
+        <div className="relative z-10 text-center max-w-md mx-auto">
+          {/* Logo */}
+          <div className="mb-8 animate-fade-in">
+            <div className="relative mx-auto w-32 h-32 mb-6">
+              <div className="absolute inset-0 bg-white/20 rounded-full blur-xl animate-pulse"></div>
+              <div className="relative bg-white rounded-full p-6 shadow-2xl">
+                <Image
+                  src="/img/SunnPark-Logo.PNG"
+                  alt="SunnPark Logo"
+                  width={80}
+                  height={80}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* App name and tagline */}
+          <div className="mb-12 animate-fade-in-delay">
+            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4 tracking-tight">
+              Sunn<span className="text-blue-200">Park</span>
+            </h1>
+            <p className="text-blue-100 text-lg sm:text-xl font-light leading-relaxed">
+              Proceed to your parking experience
+              <br />
+              with SunnPark!
+            </p>
+          </div>
+
+          {/* Get Started Button */}
+          <div className="animate-fade-in-delay-2">
+            <button
+              onClick={handleGetStarted}
+              className="w-full bg-white text-blue-600 py-4 px-8 rounded-2xl font-semibold text-lg shadow-2xl hover:shadow-xl transform hover:scale-105 active:scale-95 transition-all duration-300 hover:bg-blue-50"
+            >
+              Get Started
+            </button>
+          </div>
+
+          {/* Footer text */}
+          <div className="mt-8 animate-fade-in-delay-3">
+            <p className="text-blue-200/70 text-sm">
+              Smart parking solutions for hospital visitors
+            </p>
+          </div>
+        </div>
+
+        {/* Custom animations */}
+        <style jsx>{`
+          @keyframes fade-in {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          
+          .animate-fade-in {
+            animation: fade-in 1s ease-out forwards;
+          }
+          
+          .animate-fade-in-delay {
+            opacity: 0;
+            animation: fade-in 1s ease-out 0.3s forwards;
+          }
+          
+          .animate-fade-in-delay-2 {
+            opacity: 0;
+            animation: fade-in 1s ease-out 0.6s forwards;
+          }
+          
+          .animate-fade-in-delay-3 {
+            opacity: 0;
+            animation: fade-in 1s ease-out 0.9s forwards;
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // Main App Content
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
