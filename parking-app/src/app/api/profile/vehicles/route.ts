@@ -2,27 +2,26 @@ import { NextResponse } from "next/server";
 
 // GET /api/profile/vehicles
 export async function GET() {
-  // This is a placeholder
-  const vehicles = [
-    {
-      id: 1,
-      plate: "AB 12345",
-      make: "Tesla",
-      model: "Model 3",
-      color: "White",
-      default: true,
-    },
-    {
-      id: 2,
-      plate: "CD 67890",
-      make: "Volvo",
-      model: "XC60",
-      color: "Black",
-      default: false,
-    },
-  ];
-
-  return NextResponse.json({ data: vehicles });
+  return NextResponse.json({
+    data: [
+      {
+        id: 1,
+        plate: "AB 12345",
+        make: "Tesla",
+        model: "Model 3",
+        color: "White",
+        default: true,
+      },
+      {
+        id: 2,
+        plate: "CD 67890",
+        make: "Volvo",
+        model: "XC60",
+        color: "Black",
+        default: false,
+      },
+    ],
+  });
 }
 
 // POST /api/profile/vehicles

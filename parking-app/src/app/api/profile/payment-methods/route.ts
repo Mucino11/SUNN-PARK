@@ -2,20 +2,19 @@ import { NextResponse } from "next/server";
 
 // GET /api/profile/payment-methods
 export async function GET() {
-  // This is just a placeholder
-  const paymentMethods = [
-    { id: 1, type: "VISA", last4: "4321", expiry: "05/26", default: true },
-    {
-      id: 2,
-      type: "MasterCard",
-      last4: "8765",
-      expiry: "09/25",
-      default: false,
-    },
-    { id: 3, type: "Vipps", last4: "2468", expiry: "07/27", default: false },
-  ];
-
-  return NextResponse.json({ data: paymentMethods });
+  return NextResponse.json({
+    data: [
+      { id: 1, type: "VISA", last4: "4321", expiry: "05/26", default: true },
+      {
+        id: 2,
+        type: "MasterCard",
+        last4: "8765",
+        expiry: "09/25",
+        default: false,
+      },
+      { id: 3, type: "Vipps", last4: "2468", expiry: "07/27", default: false },
+    ],
+  });
 }
 
 // POST /api/profile/payment-methods
