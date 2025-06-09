@@ -35,9 +35,11 @@ export default function RegisterPage() {
     try {
       setErrorMsg(null);
       // Since we're using mock auth, just redirect to home
+      console.log("Registration data:", data); // Log the registration data
       router.push("/");
       alert("Registration successful! (Mock authentication)");
     } catch (error: unknown) {
+      console.error("Registration error:", error); // Log the error
       setErrorMsg("An unexpected error occurred. Please try again.");
     }
   };
