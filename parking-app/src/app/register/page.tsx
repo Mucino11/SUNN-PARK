@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import logoImage from "../images/logo.svg";
-import { useAuth } from "../context/AuthContext";
 
 const schema = z
   .object({
@@ -31,7 +30,6 @@ export default function RegisterPage() {
   const { errors, isSubmitting } = formState;
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const router = useRouter();
-  const { user } = useAuth();
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -39,7 +37,7 @@ export default function RegisterPage() {
       // Since we're using mock auth, just redirect to home
       router.push("/");
       alert("Registration successful! (Mock authentication)");
-    } catch (error) {
+    } catch (error: unknown) {
       setErrorMsg("An unexpected error occurred. Please try again.");
     }
   };

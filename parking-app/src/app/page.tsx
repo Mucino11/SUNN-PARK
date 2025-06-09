@@ -2,7 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Bell, Settings, Menu, Home, MapPin, Car, User, CreditCard, History } from "lucide-react";
+import {
+  Bell,
+  Settings,
+  Menu,
+  Home,
+  MapPin,
+  User,
+  CreditCard,
+} from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import OngoingSession from "./components/parking/OngoingSession";
 import ZonesGrid from "./components/parking/ZonesGrid";
@@ -17,9 +25,7 @@ export default function HomePage() {
   const menuItems = [
     { icon: Home, label: "Home", href: "/", active: true },
     { icon: MapPin, label: "Find Parking", href: "/find-parking" },
-    { icon: Car, label: "My Bookings", href: "/bookings" },
     { icon: CreditCard, label: "Payment", href: "/payment" },
-    { icon: History, label: "History", href: "/history" },
     { icon: User, label: "Profile", href: "/profile" },
   ];
 
@@ -31,22 +37,22 @@ export default function HomePage() {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   // Check if user has seen splash before
   useEffect(() => {
-    const hasSeenSplash = localStorage.getItem('hasSeenSplash');
+    const hasSeenSplash = localStorage.getItem("hasSeenSplash");
     if (hasSeenSplash) {
       setShowSplash(false);
     }
   }, []);
 
   const handleGetStarted = () => {
-    localStorage.setItem('hasSeenSplash', 'true');
+    localStorage.setItem("hasSeenSplash", "true");
     setShowSplash(false);
   };
 
@@ -104,7 +110,7 @@ export default function HomePage() {
           {/* Footer text */}
           <div className="mt-8 animate-fade-in-delay-3">
             <p className="text-blue-200/70 text-sm">
-              Smart parking solutions for hospital visitors
+              Smart parking solutions for hospital visitors and staffs
             </p>
           </div>
         </div>
@@ -121,21 +127,21 @@ export default function HomePage() {
               transform: translateY(0);
             }
           }
-          
+
           .animate-fade-in {
             animation: fade-in 1s ease-out forwards;
           }
-          
+
           .animate-fade-in-delay {
             opacity: 0;
             animation: fade-in 1s ease-out 0.3s forwards;
           }
-          
+
           .animate-fade-in-delay-2 {
             opacity: 0;
             animation: fade-in 1s ease-out 0.6s forwards;
           }
-          
+
           .animate-fade-in-delay-3 {
             opacity: 0;
             animation: fade-in 1s ease-out 0.9s forwards;
@@ -165,8 +171,12 @@ export default function HomePage() {
               <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 z-40 overflow-hidden">
                 <div className="py-2">
                   <div className="px-4 py-3 border-b border-gray-100">
-                    <h3 className="text-sm font-semibold text-gray-900">Navigation</h3>
-                    <p className="text-xs text-gray-500 mt-1">Quick access to all features</p>
+                    <h3 className="text-sm font-semibold text-gray-900">
+                      Navigation
+                    </h3>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Quick access to all features
+                    </p>
                   </div>
                   {menuItems.map((item) => {
                     const IconComponent = item.icon;
@@ -181,12 +191,16 @@ export default function HomePage() {
                             : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
                         }`}
                       >
-                        <div className={`p-1.5 rounded-lg ${
-                          item.active ? "bg-blue-100" : "bg-gray-100"
-                        }`}>
-                          <IconComponent className={`w-4 h-4 ${
-                            item.active ? "text-blue-600" : "text-gray-600"
-                          }`} />
+                        <div
+                          className={`p-1.5 rounded-lg ${
+                            item.active ? "bg-blue-100" : "bg-gray-100"
+                          }`}
+                        >
+                          <IconComponent
+                            className={`w-4 h-4 ${
+                              item.active ? "text-blue-600" : "text-gray-600"
+                            }`}
+                          />
                         </div>
                         <span className="font-medium">{item.label}</span>
                         {item.active && (
@@ -264,7 +278,7 @@ export default function HomePage() {
                   SunnPark
                 </h1>
                 <p className="text-sm sm:text-base text-gray-600">
-                  Smart parking solutions for hospital visitors
+                  Smart parking solutions for hospital visitors and staffs
                 </p>
               </div>
             </div>
@@ -318,7 +332,9 @@ export default function HomePage() {
           </div>
           <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg">
             <p className="text-sm sm:text-base text-gray-600 mb-4">
-              Choose from our 5 strategically located parking zones. Each zone offers different amenities and walking distances to the main entrance.
+              Choose from our 5 strategically located parking zones. Each zone
+              offers different amenities and walking distances to the main
+              entrance.
             </p>
             <ZonesGrid />
           </div>
